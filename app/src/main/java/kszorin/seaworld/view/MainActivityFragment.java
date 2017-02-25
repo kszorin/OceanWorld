@@ -15,17 +15,30 @@ import kszorin.seaworld.R;
  */
 public class MainActivityFragment extends Fragment {
 
+    private MainView mainView;
 
     public MainActivityFragment() {
         // Required empty public constructor
     }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_main_activity, container, false);
+        View view = inflater.inflate(R.layout.fragment_main, container, false);
+        mainView = (MainView) view.findViewById(R.id.main_view);
+        return view;
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mainView.stopGame();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+    }
+
 
 }

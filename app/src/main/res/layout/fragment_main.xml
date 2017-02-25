@@ -4,10 +4,12 @@
     android:layout_height="match_parent"
     tools:context="kszorin.seaworld.view.MainActivityFragment">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <CustomView
+        android:id="@+id/main_view"
+        android:name="kszorin.seaworld.view.MainView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        android:layout_height="match_parent">
+
+    </CustomView>
 
 </FrameLayout>
