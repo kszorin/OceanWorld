@@ -1,9 +1,8 @@
-package kszorin.model;
+package kszorin.seaworld.model;
 
-
-import kszorin.model.behaviour.EatingBehaviour;
-import kszorin.model.behaviour.MovingBehaviour;
-import kszorin.model.behaviour.ReproductionBehaviour;
+import kszorin.seaworld.model.behaviour.EatingBehaviour;
+import kszorin.seaworld.model.behaviour.MovingBehaviour;
+import kszorin.seaworld.model.behaviour.ReproductionBehaviour;
 
 import java.util.*;
 

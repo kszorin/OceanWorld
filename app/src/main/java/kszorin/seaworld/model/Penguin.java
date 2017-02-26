@@ -1,7 +1,8 @@
-package kszorin.model;
+package kszorin.seaworld.model;
 
-import kszorin.model.behaviour.InEnvironsMoving;
-import kszorin.model.behaviour.PeriodicReproduction;
+
+import kszorin.seaworld.model.behaviour.InEnvironsMoving;
+import kszorin.seaworld.model.behaviour.PeriodicReproduction;
 
 public class Penguin extends Animal {
     private static final int PENGUIN_REPRODUCTION_PERIOD = 3;

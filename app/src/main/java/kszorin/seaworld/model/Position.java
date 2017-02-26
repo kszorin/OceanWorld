@@ -1,4 +1,4 @@
-package kszorin.model;
+package kszorin.seaworld.model;
 
 public class Position {
     private int x;

@@ -1,4 +1,5 @@
-package kszorin.model;
+package kszorin.seaworld.model;
+
 
 public abstract class SeaCreature {
     protected int id;

@@ -1,8 +1,8 @@
-package kszorin.model;
+package kszorin.seaworld.model;
 
-import kszorin.model.behaviour.Hunting;
-import kszorin.model.behaviour.InEnvironsMoving;
-import kszorin.model.behaviour.PeriodicReproduction;
+import kszorin.seaworld.model.behaviour.Hunting;
+import kszorin.seaworld.model.behaviour.InEnvironsMoving;
+import kszorin.seaworld.model.behaviour.PeriodicReproduction;
 
 import java.util.ArrayList;
 import java.util.List;

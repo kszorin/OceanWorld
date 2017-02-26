@@ -1,10 +1,10 @@
-package kszorin.model.behaviour;
+package kszorin.seaworld.model.behaviour;
 
-import kszorin.model.Animal;
-import kszorin.model.PlayingWorld;
-import kszorin.model.Position;
-import kszorin.model.SeaCreature;
-import kszorin.model.behaviour.EatingBehaviour;
+import kszorin.seaworld.model.Animal;
+import kszorin.seaworld.model.PlayingWorld;
+import kszorin.seaworld.model.Position;
+import kszorin.seaworld.model.SeaCreature;
+import kszorin.seaworld.model.behaviour.EatingBehaviour;
 
 import java.util.List;
 import java.util.Map;

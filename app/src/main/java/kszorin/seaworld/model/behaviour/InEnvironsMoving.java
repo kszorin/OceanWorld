@@ -1,6 +1,6 @@
-package kszorin.model.behaviour;
+package kszorin.seaworld.model.behaviour;
 
-import kszorin.model.*;
+import kszorin.seaworld.model.*;
 
 import java.util.List;
 import java.util.Map;

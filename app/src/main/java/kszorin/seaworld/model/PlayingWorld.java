@@ -1,4 +1,5 @@
-package kszorin.model;
+package kszorin.seaworld.model;
+
 
 import java.util.*;
 
@@ -9,6 +10,7 @@ public class PlayingWorld {
     private final int penguinsQuantity;
     private int seaCreaturesIdCounter;
     private int waterSpace[][];
+
     private Map<Integer, SeaCreature> seaCreaturesMap;
 
     public PlayingWorld(byte fieldSizeX, byte fieldSizeY, byte orcasPercentFilling, byte penguinsPercentFilling) throws Exception {
