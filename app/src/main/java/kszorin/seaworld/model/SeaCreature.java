@@ -1,6 +1,8 @@
 package kszorin.seaworld.model;
 
 
+import kszorin.seaworld.view.PlayingWorldView;
+
 public abstract class SeaCreature {
     protected int id;
     protected SealCreatureSpecies species;
@@ -28,7 +30,7 @@ public abstract class SeaCreature {
         this.pos = pos;
     }
 
-    public abstract void lifeStep (PlayingWorld playingWorld);
+    public abstract void lifeStep (PlayingWorldView playingWorldView);
 
     @Override
     public String toString() {

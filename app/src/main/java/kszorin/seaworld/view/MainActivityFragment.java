@@ -15,7 +15,7 @@ import kszorin.seaworld.R;
  */
 public class MainActivityFragment extends Fragment {
 
-    private MainView mainView;
+    private PlayingWorldView mainView;
 
     public MainActivityFragment() {
         // Required empty public constructor
@@ -25,7 +25,7 @@ public class MainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-        mainView = (MainView) view.findViewById(R.id.main_view);
+        mainView = (PlayingWorldView) view.findViewById(R.id.main_view);
         return view;
     }
 

@@ -21,7 +21,7 @@ import kszorin.seaworld.model.Penguin;
 import kszorin.seaworld.model.Position;
 import kszorin.seaworld.model.SeaCreature;
 
-public class MainView extends SurfaceView implements SurfaceHolder.Callback {
+public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callback {
     private static final String TAG = "MainView";
 
     public static final byte FIELD_SIZE_X = 10;
@@ -38,6 +38,9 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
     private final byte fieldSizeX;
     private final byte fieldSizeY;
 
+    private float squareWidth;
+    private float squareHeight;
+
     private final int orcasQuantity;
     private final int penguinsQuantity;
     private int seaCreaturesIdCounter;
@@ -48,7 +51,7 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
     private Paint linePaint;
 
 
-    public MainView(Context context, AttributeSet attrs) {
+    public PlayingWorldView(Context context, AttributeSet attrs) {
         super(context, attrs);
         // Регистрация слушателя SurfaceHolder.Callback
         getHolder().addCallback(this);
@@ -62,6 +65,8 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
 
         backgroundPaint = new Paint();
         backgroundPaint.setColor(Color.WHITE);
+        linePaint = new Paint();
+        linePaint.setColor(Color.BLACK);
 
 
     }
@@ -71,6 +76,8 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
         super.onSizeChanged(w, h, oldw, oldh);
         screenWidth = w;
         screenHeight = h;
+        squareWidth = screenWidth / fieldSizeX;
+        squareHeight = screenHeight / fieldSizeY;
     }
 
     public int getScreenWidth() {
@@ -145,6 +152,14 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
     public void drawGameElements(Canvas canvas) {
         canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), backgroundPaint);
 //        TODO: рисуем все элементы игры
+
+        for (int i=0; i <=FIELD_SIZE_X; i++ ) {
+            canvas.drawLine(i * squareWidth, 0, i * squareWidth, screenHeight, linePaint);
+        }
+        for (int i=0; i <=FIELD_SIZE_Y; i++ ) {
+            canvas.drawLine(0, i * squareHeight, screenWidth, i * squareHeight, linePaint);
+        }
+
     }
 
     public void stopGame() {
@@ -225,5 +240,29 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
                 }
             }
         }
+    }
+
+    public Map<Integer, SeaCreature> getSeaCreaturesMap() {
+        return seaCreaturesMap;
+    }
+
+    public int[][] getWaterSpace() {
+        return waterSpace;
+    }
+
+    public byte getFieldSizeX() {
+        return fieldSizeX;
+    }
+
+    public byte getFieldSizeY() {
+        return fieldSizeY;
+    }
+
+    public int getSeaCreaturesIdCounter() {
+        return seaCreaturesIdCounter;
+    }
+
+    public void setSeaCreaturesIdCounter(int seaCreaturesIdCounter) {
+        this.seaCreaturesIdCounter = seaCreaturesIdCounter;
     }
 }

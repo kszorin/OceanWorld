@@ -3,9 +3,7 @@ package kszorin.seaworld.model;
 import kszorin.seaworld.model.behaviour.Hunting;
 import kszorin.seaworld.model.behaviour.InEnvironsMoving;
 import kszorin.seaworld.model.behaviour.PeriodicReproduction;
-
-import java.util.ArrayList;
-import java.util.List;
+import kszorin.seaworld.view.PlayingWorldView;
 
 public class Orca extends Animal {
     private static final byte ORCA_REPRODUCTION_PERIOD = 8;
@@ -25,23 +23,23 @@ public class Orca extends Animal {
     }
 
     @Override
-    public void lifeStep(PlayingWorld playingWorld) {
-        if (eatingBehaviour.eat(this, playingWorld, findInEnvirons (playingWorld, targetList))) {
+    public void lifeStep(PlayingWorldView playingWorldView) {
+        if (eatingBehaviour.eat(this, playingWorldView, findInEnvirons (playingWorldView, targetList))) {
             timeFromEating = 0;
         }
         else {
-            movingBehaviour.move(this, playingWorld, findInEnvirons(playingWorld));
+            movingBehaviour.move(this, playingWorldView, findInEnvirons(playingWorldView));
             timeFromEating++;
         }
         if (timeFromEating >= ORCA_HUNGER_DEATH_PERIOD) {
-            playingWorld.getWaterSpace()[pos.getY()][pos.getX()] = -1;
-            playingWorld.getSeaCreaturesMap().remove(this.id);
+            playingWorldView.getWaterSpace()[pos.getY()][pos.getX()] = -1;
+            playingWorldView.getSeaCreaturesMap().remove(this.id);
             System.out.printf("%c(%d) [%d,%d]: died of hungry!\n", species.toString().charAt(0), id, pos.getX(), pos.getY());
         }
         else {
             age++;
             if ((age!=0) && (age % ORCA_REPRODUCTION_PERIOD == 0)) {
-                reproductionBehaviour.reproduct(this, playingWorld, findInEnvirons(playingWorld));
+                reproductionBehaviour.reproduct(this, playingWorldView, findInEnvirons(playingWorldView));
             }
         }
     }

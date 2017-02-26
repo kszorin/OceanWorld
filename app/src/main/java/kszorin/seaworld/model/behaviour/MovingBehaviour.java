@@ -1,11 +1,11 @@
 package kszorin.seaworld.model.behaviour;
 
 import kszorin.seaworld.model.Animal;
-import kszorin.seaworld.model.PlayingWorld;
 import kszorin.seaworld.model.Position;
+import kszorin.seaworld.view.PlayingWorldView;
 
 import java.util.List;
 
 public interface MovingBehaviour {
-    void move (Animal animal, PlayingWorld playingWorld, List<Position> foundPositionsInEnvirons);
+    void move (Animal animal, PlayingWorldView playingWorldView, List<Position> foundPositionsInEnvirons);
 }

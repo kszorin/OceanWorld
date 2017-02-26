@@ -3,6 +3,7 @@ package kszorin.seaworld.model;
 
 import kszorin.seaworld.model.behaviour.InEnvironsMoving;
 import kszorin.seaworld.model.behaviour.PeriodicReproduction;
+import kszorin.seaworld.view.PlayingWorldView;
 
 public class Penguin extends Animal {
     private static final int PENGUIN_REPRODUCTION_PERIOD = 3;
@@ -19,11 +20,11 @@ public class Penguin extends Animal {
     }
 
     @Override
-    public void lifeStep(PlayingWorld playingWorld) {
-        movingBehaviour.move(this, playingWorld, findInEnvirons (playingWorld));
+    public void lifeStep(PlayingWorldView playingWorldView) {
+        movingBehaviour.move(this, playingWorldView, findInEnvirons (playingWorldView));
         age++;
         if ((age!=0) && (age % PENGUIN_REPRODUCTION_PERIOD == 0)) {
-            reproductionBehaviour.reproduct(this, playingWorld, findInEnvirons(playingWorld));
+            reproductionBehaviour.reproduct(this, playingWorldView, findInEnvirons(playingWorldView));
         }
     }
 

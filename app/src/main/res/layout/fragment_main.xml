@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <kszorin.seaworld.view.MainView
+    <kszorin.seaworld.view.PlayingWorldView
         android:id="@+id/main_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

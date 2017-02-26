@@ -1,15 +1,16 @@
 package kszorin.seaworld.model.behaviour;
 
 import kszorin.seaworld.model.*;
+import kszorin.seaworld.view.PlayingWorldView;
 
 import java.util.List;
 import java.util.Map;
 
 public class InEnvironsMoving implements MovingBehaviour {
     @Override
-    public void move(Animal animal, PlayingWorld playingWorld, List<Position> foundPositionsInEnvirons) {
-        int waterSpace[][] = playingWorld.getWaterSpace();
-        Map<Integer, SeaCreature> seaCreaturesMap = playingWorld.getSeaCreaturesMap();
+    public void move(Animal animal, PlayingWorldView playingWorldView, List<Position> foundPositionsInEnvirons) {
+        int waterSpace[][] = playingWorldView.getWaterSpace();
+        Map<Integer, SeaCreature> seaCreaturesMap = playingWorldView.getSeaCreaturesMap();
         Position pos = animal.getPos();
 
         if (foundPositionsInEnvirons.size() > 0) {
