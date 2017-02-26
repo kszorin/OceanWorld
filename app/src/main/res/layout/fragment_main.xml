@@ -1,15 +1,21 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    tools:context="kszorin.seaworld.view.MainActivityFragment"
     android:layout_height="match_parent"
-    tools:context="kszorin.seaworld.view.MainActivityFragment">
+    android:orientation="vertical">
 
-    <CustomView
+    <kszorin.seaworld.view.MainView
         android:id="@+id/main_view"
-        android:name="kszorin.seaworld.view.MainView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_weight="90"/>
 
-    </CustomView>
-
-</FrameLayout>
+    <Button
+        android:id="@+id/reset_game_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/reset_game"
+        />
+</LinearLayout>

@@ -3,6 +3,7 @@ package kszorin.seaworld.view;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -44,8 +45,7 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
     private Map<Integer, SeaCreature> seaCreaturesMap;
 
     private Paint backgroundPaint;
-
-
+    private Paint linePaint;
 
 
     public MainView(Context context, AttributeSet attrs) {
@@ -59,6 +59,11 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
         penguinsQuantity = fieldSizeX * fieldSizeY * PENGUINS_PERCENT_FILLING / 100;
         waterSpace = new int[fieldSizeY][fieldSizeX];
         seaCreaturesMap = new HashMap<Integer, SeaCreature>();
+
+        backgroundPaint = new Paint();
+        backgroundPaint.setColor(Color.WHITE);
+
+
     }
 
     @Override
@@ -131,14 +136,15 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
                     seaCreaturesInOrder.add(seaCreaturesMap.get(waterSpace[i][j]));
             }
 //        Запускаем очередной жизненный цикл.
-        for (SeaCreature seaCreature: seaCreaturesInOrder) {
+        /*for (SeaCreature seaCreature: seaCreaturesInOrder) {
             if (seaCreaturesMap.containsValue(seaCreature))
                 seaCreature.lifeStep(this);
-        }
+        }*/
     }
 
     public void drawGameElements(Canvas canvas) {
         canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), backgroundPaint);
+//        TODO: рисуем все элементы игры
     }
 
     public void stopGame() {
@@ -207,20 +213,16 @@ public class MainView extends SurfaceView implements SurfaceHolder.Callback {
             Canvas canvas = null;
 
             while (threadIsRunning) {
-                /*
                 try {
                     canvas = surfaceHolder.lockCanvas(null);
-
-                    synchronized(surfaceHolder) {
-                        updatePositions();
-                        drawGameElements(canvas);
+                        synchronized (surfaceHolder) {
+                            drawGameElements(canvas);
                     }
                 }
                 finally {
                     if (canvas != null)
                         surfaceHolder.unlockCanvasAndPost(canvas);
                 }
-                */
             }
         }
     }
