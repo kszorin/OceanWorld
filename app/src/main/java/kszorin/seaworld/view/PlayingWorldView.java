@@ -67,8 +67,6 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         backgroundPaint.setColor(Color.WHITE);
         linePaint = new Paint();
         linePaint.setColor(Color.BLACK);
-
-
     }
 
     @Override
@@ -78,14 +76,6 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         screenHeight = h;
         squareWidth = screenWidth / fieldSizeX;
         squareHeight = screenHeight / fieldSizeY;
-    }
-
-    public int getScreenWidth() {
-        return screenWidth;
-    }
-
-    public int getScreenHeight() {
-        return screenHeight;
     }
 
     public void newGame() {
@@ -105,7 +95,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                 possiblePosX = possiblePos % fieldSizeX;
                 if (waterSpace[possiblePosY][possiblePosX] == -1 ) {
                     waterSpace[possiblePosY][possiblePosX] = seaCreaturesIdCounter;
-                    seaCreaturesMap.put(seaCreaturesIdCounter, new Orca(seaCreaturesIdCounter, new Position(possiblePosX, possiblePosY)));
+                    seaCreaturesMap.put(seaCreaturesIdCounter, new Orca(seaCreaturesIdCounter, new Position(possiblePosX, possiblePosY), this));
                     seaCreaturesIdCounter++;
                     System.out.printf("Orca (id=%d) ДОБАВЛЕНА в [%d,%d]  \n", waterSpace[possiblePosY][possiblePosX], possiblePosX, possiblePosY);
                     break;
@@ -123,7 +113,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                 possiblePosX = possiblePos % fieldSizeX;
                 if (waterSpace[possiblePosY][possiblePosX] == -1 ) {
                     waterSpace[possiblePosY][possiblePosX] = seaCreaturesIdCounter;
-                    seaCreaturesMap.put(seaCreaturesIdCounter, new Penguin(seaCreaturesIdCounter, new Position(possiblePosX, possiblePosY)));
+                    seaCreaturesMap.put(seaCreaturesIdCounter, new Penguin(seaCreaturesIdCounter, new Position(possiblePosX, possiblePosY), this));
                     seaCreaturesIdCounter++;
                     System.out.printf("Penguin (id=%d) ДОБАВЛЕН в [%d,%d]  \n", waterSpace[possiblePosY][possiblePosX], possiblePosX, possiblePosY);
                     break;
@@ -134,7 +124,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         }
     }
 
-    private void updatePositions() {
+    private synchronized void updatePositions() {
         List<SeaCreature> seaCreaturesInOrder = new ArrayList<SeaCreature>();
 //        Набираем список существ в порядке обхода поля.
         for (int i = 0, j; i < fieldSizeY; i++)
@@ -143,16 +133,22 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                     seaCreaturesInOrder.add(seaCreaturesMap.get(waterSpace[i][j]));
             }
 //        Запускаем очередной жизненный цикл.
-        /*for (SeaCreature seaCreature: seaCreaturesInOrder) {
-            if (seaCreaturesMap.containsValue(seaCreature))
-                seaCreature.lifeStep(this);
-        }*/
+        try {
+            for (SeaCreature seaCreature: seaCreaturesInOrder) {
+                if (seaCreaturesMap.containsValue(seaCreature)) {
+                    seaCreature.lifeStep();
+                    wait();
+                    Thread.sleep(1000);
+                }
+            }
+        }catch (Exception ex){
+            ex.printStackTrace();
+        }
     }
 
-    public void drawGameElements(Canvas canvas) {
+    public synchronized void drawGameElements(Canvas canvas) {
         canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), backgroundPaint);
-//        TODO: рисуем все элементы игры
-
+//        Рисуем линии.
         for (int i=0; i <=FIELD_SIZE_X; i++ ) {
             canvas.drawLine(i * squareWidth, 0, i * squareWidth, screenHeight, linePaint);
         }
@@ -160,7 +156,25 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
             canvas.drawLine(0, i * squareHeight, screenWidth, i * squareHeight, linePaint);
         }
 
+//        Рисуем создания.
+//        List<SeaCreature> seaCreaturesInOrder = new ArrayList<SeaCreature>();
+        Paint creaturePaint = new Paint();
+//        Набираем список существ в порядке обхода поля.
+//        for (int i = 0, j; i < fieldSizeY; i++)
+//            for (j=0; j < fieldSizeX; j++) {
+//                if (waterSpace[i][j] != -1)
+//                    seaCreaturesInOrder.add(seaCreaturesMap.get(waterSpace[i][j]));
+//            }
+//        for (SeaCreature seaCreature: seaCreaturesInOrder) {
+//            if (seaCreaturesMap.containsValue(seaCreature))
+//                seaCreature.draw(canvas,creaturePaint);
+//            }
+        for (SeaCreature seaCreature:seaCreaturesMap.values()) {
+            seaCreature.draw(canvas, creaturePaint);
+            notify();
+        }
     }
+
 
     public void stopGame() {
 //        TODO: завершение игры
@@ -256,6 +270,22 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
 
     public byte getFieldSizeY() {
         return fieldSizeY;
+    }
+
+    public int getScreenWidth() {
+        return screenWidth;
+    }
+
+    public int getScreenHeight() {
+        return screenHeight;
+    }
+
+    public float getSquareHeight() {
+        return squareHeight;
+    }
+
+    public float getSquareWidth() {
+        return squareWidth;
     }
 
     public int getSeaCreaturesIdCounter() {

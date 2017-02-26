@@ -1,5 +1,7 @@
 package kszorin.seaworld.model;
 
+import android.graphics.Canvas;
+import android.graphics.Paint;
 
 import kszorin.seaworld.view.PlayingWorldView;
 
@@ -8,6 +10,7 @@ public abstract class SeaCreature {
     protected SealCreatureSpecies species;
     protected Position pos;
     protected byte environs;
+    protected PlayingWorldView playingWorldView;
 
     public int getId() {
         return id;
@@ -25,12 +28,15 @@ public abstract class SeaCreature {
         this.pos = pos;
     }
 
-    public SeaCreature(int id, Position pos) {
+    public SeaCreature(int id, Position pos, PlayingWorldView playingWorldView) {
         this.id = id;
         this.pos = pos;
+        this.playingWorldView = playingWorldView;
     }
 
-    public abstract void lifeStep (PlayingWorldView playingWorldView);
+    public abstract void lifeStep ();
+
+    public abstract void draw (Canvas canvas, Paint paint);
 
     @Override
     public String toString() {

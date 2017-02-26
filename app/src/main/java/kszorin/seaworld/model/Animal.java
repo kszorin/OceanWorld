@@ -19,8 +19,8 @@ public abstract class Animal extends SeaCreature {
 
     protected List<SealCreatureSpecies> targetList = new ArrayList<SealCreatureSpecies>();
 
-    public Animal(int id, Position pos) {
-        super(id, pos);
+    public Animal(int id, Position pos, PlayingWorldView playingWorldView) {
+        super(id, pos, playingWorldView);
         this.age = 0;
         this.timeFromEating = 0;
         this.timeFromReproduction = 0;
@@ -28,7 +28,7 @@ public abstract class Animal extends SeaCreature {
 
     public abstract Animal getBaby(int id, Position pos);
 
-    protected List<Position> findInEnvirons (PlayingWorldView playingWorldView) {
+    protected List<Position> findInEnvirons () {
         int waterSpace[][] = playingWorldView.getWaterSpace();
         int beginRangeBypassX, endRangeBypassX, beginRangeBypassY, endRangeBypassY;
 
@@ -56,7 +56,7 @@ public abstract class Animal extends SeaCreature {
         return findPosBuffer;
     }
 
-    protected List<Position> findInEnvirons (PlayingWorldView playingWorldView, List<SealCreatureSpecies> targets) {
+    protected List<Position> findInEnvirons (List<SealCreatureSpecies> targets) {
         int waterSpace[][] = playingWorldView.getWaterSpace();
         Map<Integer, SeaCreature> seaCreaturesMap = playingWorldView.getSeaCreaturesMap();
         int beginRangeBypassX, endRangeBypassX, beginRangeBypassY, endRangeBypassY;
@@ -91,5 +91,5 @@ public abstract class Animal extends SeaCreature {
     }
 
     @Override
-    public abstract void lifeStep(PlayingWorldView playingWorldView);
+    public abstract void lifeStep();
 }
