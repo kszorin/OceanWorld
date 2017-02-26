@@ -78,6 +78,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         squareHeight = screenHeight / fieldSizeY;
     }
 
+//    TODO: обработка кнопки
     public void newGame() {
         for (int i = 0, j; i < fieldSizeY; i++)
             for (j=0; j < fieldSizeX; j++)
@@ -137,8 +138,8 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
             for (SeaCreature seaCreature: seaCreaturesInOrder) {
                 if (seaCreaturesMap.containsValue(seaCreature)) {
                     seaCreature.lifeStep();
-                    wait();
-                    Thread.sleep(1000);
+//                    wait();
+//                    Thread.sleep(1000);
                 }
             }
         }catch (Exception ex){
@@ -156,22 +157,21 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
             canvas.drawLine(0, i * squareHeight, screenWidth, i * squareHeight, linePaint);
         }
 
-//        Рисуем создания.
-//        List<SeaCreature> seaCreaturesInOrder = new ArrayList<SeaCreature>();
+//      TODO: придумать другой способ правильного обхода массива с существами
+        List<SeaCreature> seaCreaturesInOrder = new ArrayList<SeaCreature>();
         Paint creaturePaint = new Paint();
 //        Набираем список существ в порядке обхода поля.
-//        for (int i = 0, j; i < fieldSizeY; i++)
-//            for (j=0; j < fieldSizeX; j++) {
-//                if (waterSpace[i][j] != -1)
-//                    seaCreaturesInOrder.add(seaCreaturesMap.get(waterSpace[i][j]));
-//            }
-//        for (SeaCreature seaCreature: seaCreaturesInOrder) {
-//            if (seaCreaturesMap.containsValue(seaCreature))
-//                seaCreature.draw(canvas,creaturePaint);
-//            }
-        for (SeaCreature seaCreature:seaCreaturesMap.values()) {
-            seaCreature.draw(canvas, creaturePaint);
-            notify();
+        for (int i = 0, j; i < fieldSizeY; i++)
+            for (j=0; j < fieldSizeX; j++) {
+                if (waterSpace[i][j] != -1)
+                    seaCreaturesInOrder.add(seaCreaturesMap.get(waterSpace[i][j]));
+            }
+//        Рисуем создания.
+        for (SeaCreature seaCreature: seaCreaturesInOrder) {
+            if (seaCreaturesMap.containsValue(seaCreature)) {
+                seaCreature.draw(canvas, creaturePaint);
+//            notify();
+            }
         }
     }
 

@@ -56,6 +56,8 @@ public class Orca extends Animal {
     @Override
     public void draw(Canvas canvas, Paint paint) {
         paint.setColor(Color.RED);
+//        TODO: картинки вместо квадратов
+//        TODO: вписать в квадрат id существа.
         canvas.drawRect(playingWorldView.getSquareWidth()/4 + playingWorldView.getSquareWidth() * pos.getX(),
                 playingWorldView.getSquareHeight()/4 + playingWorldView.getSquareHeight() * pos.getY(),
                 playingWorldView.getSquareWidth()*3/4 + playingWorldView.getSquareWidth() * pos.getX(),
