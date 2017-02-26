@@ -1,6 +1,8 @@
 package kszorin.seaworld.model;
 
 
+import android.graphics.Canvas;
+
 import java.util.*;
 
 public class PlayingWorld {
@@ -71,21 +73,27 @@ public class PlayingWorld {
             } while(true);
         }
     }
-
-    public void nextLifeStep() {
-        List<SeaCreature> seaCreatures = new ArrayList<SeaCreature>();
+//      TODO: сделать последовательное обновление персонажей
+    public void update() {
+        List<SeaCreature> seaCreaturesInOrder = new ArrayList<SeaCreature>();
 //        Набираем список существ в порядке обхода поля.
         for (int i = 0, j; i < fieldSizeY; i++)
             for (j=0; j < fieldSizeX; j++) {
                 if (waterSpace[i][j] != -1)
-                    seaCreatures.add(seaCreaturesMap.get(waterSpace[i][j]));
+                    seaCreaturesInOrder.add(seaCreaturesMap.get(waterSpace[i][j]));
             }
 //        Запускаем очередной жизненный цикл.
-        for (SeaCreature seaCreature: seaCreatures) {
+        for (SeaCreature seaCreature: seaCreaturesInOrder) {
             if (seaCreaturesMap.containsValue(seaCreature))
                 seaCreature.lifeStep(this);
         }
     }
+
+
+    public void draw(Canvas canvas) {
+
+    }
+
 
     public Map<Integer, SeaCreature> getSeaCreaturesMap() {
         return seaCreaturesMap;
