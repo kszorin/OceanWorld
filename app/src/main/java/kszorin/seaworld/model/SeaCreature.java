@@ -11,6 +11,7 @@ public abstract class SeaCreature {
     protected Position pos;
     protected byte environs;
     protected PlayingWorldView playingWorldView;
+    private boolean lifeStepExecute;
 
     public int getId() {
         return id;
@@ -32,11 +33,20 @@ public abstract class SeaCreature {
         this.id = id;
         this.pos = pos;
         this.playingWorldView = playingWorldView;
+        lifeStepExecute = false;
     }
 
     public abstract void lifeStep ();
 
     public abstract void draw (Canvas canvas, Paint paint);
+
+    public boolean isLifeStepExecute() {
+        return lifeStepExecute;
+    }
+
+    public void setLifeStepExecute(boolean lifeStepExecute) {
+        this.lifeStepExecute = lifeStepExecute;
+    }
 
     @Override
     public String toString() {

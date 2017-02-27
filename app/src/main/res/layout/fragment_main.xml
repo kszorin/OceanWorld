@@ -17,5 +17,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:text="@string/reset_game"
+        android:onClick="resetGame"
         />
 </LinearLayout>

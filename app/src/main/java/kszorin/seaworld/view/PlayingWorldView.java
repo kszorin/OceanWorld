@@ -79,7 +79,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
     }
 
 //    TODO: обработка кнопки
-    public void newGame() {
+    public void resetGame() {
         for (int i = 0, j; i < fieldSizeY; i++)
             for (j=0; j < fieldSizeX; j++)
                 waterSpace[i][j] = -1;
@@ -128,23 +128,32 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
     private synchronized void updatePositions() {
         List<SeaCreature> seaCreaturesInOrder = new ArrayList<SeaCreature>();
 //        Набираем список существ в порядке обхода поля.
-        for (int i = 0, j; i < fieldSizeY; i++)
-            for (j=0; j < fieldSizeX; j++) {
-                if (waterSpace[i][j] != -1)
-                    seaCreaturesInOrder.add(seaCreaturesMap.get(waterSpace[i][j]));
-            }
-//        Запускаем очередной жизненный цикл.
         try {
-            for (SeaCreature seaCreature: seaCreaturesInOrder) {
-                if (seaCreaturesMap.containsValue(seaCreature)) {
-                    seaCreature.lifeStep();
-//                    wait();
-//                    Thread.sleep(1000);
+            for (int i = 0, j; i < fieldSizeY; i++)
+                for (j=0; j < fieldSizeX; j++) {
+                    if ((waterSpace[i][j] != -1) && (!(seaCreaturesMap.get(waterSpace[i][j]).isLifeStepExecute()))) {
+                        seaCreaturesMap.get(waterSpace[i][j]).setLifeStepExecute(true);
+                        seaCreaturesMap.get(waterSpace[i][j]).lifeStep();
+                        wait(500);
+                    }
                 }
-            }
+            for (SeaCreature seaCreature:seaCreaturesMap.values())
+                seaCreature.setLifeStepExecute(false);
         }catch (Exception ex){
             ex.printStackTrace();
         }
+//        Запускаем очередной жизненный цикл.
+//        try {
+//            for (SeaCreature seaCreature: seaCreaturesInOrder) {
+//                if (seaCreaturesMap.containsValue(seaCreature)) {
+//                    seaCreature.lifeStep();
+////                    wait();
+////                    Thread.sleep(1000);
+//                }
+//            }
+//        }catch (Exception ex){
+//            ex.printStackTrace();
+//        }
     }
 
     public synchronized void drawGameElements(Canvas canvas) {
@@ -163,16 +172,18 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
 //        Набираем список существ в порядке обхода поля.
         for (int i = 0, j; i < fieldSizeY; i++)
             for (j=0; j < fieldSizeX; j++) {
-                if (waterSpace[i][j] != -1)
-                    seaCreaturesInOrder.add(seaCreaturesMap.get(waterSpace[i][j]));
+                if (waterSpace[i][j] != -1) {
+                    seaCreaturesMap.get(waterSpace[i][j]).draw(canvas, creaturePaint);
+                }
             }
+        //notify();
 //        Рисуем создания.
-        for (SeaCreature seaCreature: seaCreaturesInOrder) {
-            if (seaCreaturesMap.containsValue(seaCreature)) {
-                seaCreature.draw(canvas, creaturePaint);
-//            notify();
-            }
-        }
+//        for (SeaCreature seaCreature: seaCreaturesInOrder) {
+//            if (seaCreaturesMap.containsValue(seaCreature)) {
+//                seaCreature.draw(canvas, creaturePaint);
+////            notify();
+//            }
+//        }
     }
 
 
@@ -192,7 +203,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
-        newGame();
+        resetGame();
         playingWorldThread = new PlayingWorldThread(holder);
         playingWorldThread.setThreadIsRunning(true);
         playingWorldThread.start();

@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import kszorin.seaworld.R;
 
@@ -15,7 +16,7 @@ import kszorin.seaworld.R;
  */
 public class MainActivityFragment extends Fragment {
 
-    private PlayingWorldView mainView;
+    private PlayingWorldView playingWorldView;
 
     public MainActivityFragment() {
         // Required empty public constructor
@@ -25,14 +26,24 @@ public class MainActivityFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
-        mainView = (PlayingWorldView) view.findViewById(R.id.main_view);
+        if (view != null) {
+            playingWorldView = (PlayingWorldView) view.findViewById(R.id.main_view);
+
+            Button resetGameButton = (Button) view.findViewById(R.id.reset_game_button);
+            resetGameButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    playingWorldView.resetGame();
+                }
+            });
+        }
         return view;
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mainView.stopGame();
+        playingWorldView.stopGame();
     }
 
     @Override
