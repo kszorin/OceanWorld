@@ -97,8 +97,8 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                 if (waterSpace[possiblePosY][possiblePosX] == -1 ) {
                     waterSpace[possiblePosY][possiblePosX] = seaCreaturesIdCounter;
                     seaCreaturesMap.put(seaCreaturesIdCounter, new Orca(seaCreaturesIdCounter, new Position(possiblePosX, possiblePosY), this));
+                    System.out.printf("Orca (id=%d) ДОБАВЛЕНА в [%d,%d]  \n", seaCreaturesIdCounter, possiblePosX, possiblePosY);
                     seaCreaturesIdCounter++;
-                    System.out.printf("Orca (id=%d) ДОБАВЛЕНА в [%d,%d]  \n", waterSpace[possiblePosY][possiblePosX], possiblePosX, possiblePosY);
                     break;
                 }
                 else
@@ -115,8 +115,8 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                 if (waterSpace[possiblePosY][possiblePosX] == -1 ) {
                     waterSpace[possiblePosY][possiblePosX] = seaCreaturesIdCounter;
                     seaCreaturesMap.put(seaCreaturesIdCounter, new Penguin(seaCreaturesIdCounter, new Position(possiblePosX, possiblePosY), this));
+                    System.out.printf("Penguin (id=%d) ДОБАВЛЕН в [%d,%d]  \n", seaCreaturesIdCounter, possiblePosX, possiblePosY);
                     seaCreaturesIdCounter++;
-                    System.out.printf("Penguin (id=%d) ДОБАВЛЕН в [%d,%d]  \n", waterSpace[possiblePosY][possiblePosX], possiblePosX, possiblePosY);
                     break;
                 }
                 else
