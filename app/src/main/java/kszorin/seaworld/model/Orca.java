@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.util.Log;
 
 import kszorin.seaworld.model.behaviour.Hunting;
 import kszorin.seaworld.model.behaviour.InEnvironsMoving;
@@ -43,20 +44,23 @@ public class Orca extends Animal {
         }
         else {
             age++;
-            if ((age!=0) && (age % ORCA_REPRODUCTION_PERIOD == 0)) {
+            if ((age!=0) && (age % ORCA_REPRODUCTION_PERIOD == 0))
                 reproductionBehaviour.reproduct(this, playingWorldView, findInEnvirons());
-            }
+            else
+                reproductionPeriod++;
         }
     }
 
     @Override
     public Animal getBaby(int id, Position pos, Bitmap bmp) {
-        return new Orca(id, pos, playingWorldView, bmp);
+        Animal animal = new Orca(id, pos, playingWorldView, bmp);
+//        animal.setLifeStepExecute(true);
+        return animal;
     }
 
     @Override
     public void draw(Canvas canvas, Paint paint) {
-        paint.setColor(Color.RED);
+
         float scaleFactor;
 
         if (age < 3)
@@ -64,6 +68,26 @@ public class Orca extends Animal {
         else
             scaleFactor = 1;
         int bmpWidth = (int) (scaleFactor * playingWorldView.getSquareWidth()), bmpHeight = (int) (scaleFactor * playingWorldView.getSquareHeight());
+
+
+        if (timeFromEating == ORCA_HUNGER_DEATH_PERIOD-1) {
+            paint.setColor(Color.RED);
+            canvas.drawRect(playingWorldView.getSquareWidth() * pos.getX() + (int) (0.5 * (playingWorldView.getSquareWidth() - bmpWidth)),
+                    playingWorldView.getSquareHeight() * pos.getY() + (int) (0.5 * (playingWorldView.getSquareHeight() - bmpHeight)),
+                    playingWorldView.getSquareWidth() * pos.getX() + (int) (0.5 * (playingWorldView.getSquareWidth() + bmpWidth)),
+                    playingWorldView.getSquareHeight() * pos.getY() + (int) (0.5 * (playingWorldView.getSquareHeight())),
+                    paint);
+        }
+
+        if (age % ORCA_REPRODUCTION_PERIOD == ORCA_REPRODUCTION_PERIOD-1) {
+            paint.setColor(Color.GREEN);
+            canvas.drawRect(playingWorldView.getSquareWidth() * pos.getX() + (int) (0.5 * (playingWorldView.getSquareWidth() - bmpWidth)),
+                    playingWorldView.getSquareHeight() * pos.getY() + (int) (0.5 * (playingWorldView.getSquareHeight())),
+                    playingWorldView.getSquareWidth() * pos.getX() + (int) (0.5 * (playingWorldView.getSquareWidth() + bmpWidth)),
+                    playingWorldView.getSquareHeight() * pos.getY() + (int) (0.5 * (playingWorldView.getSquareHeight() + bmpHeight)),
+                    paint);
+        }
+
         canvas.drawBitmap(Bitmap.createScaledBitmap(bmp, bmpWidth, bmpHeight, false),
                 playingWorldView.getSquareWidth() * pos.getX() + (int)(0.5 * (playingWorldView.getSquareWidth() - bmpWidth)),
                 playingWorldView.getSquareHeight() * pos.getY() + (int)(0.5 * (playingWorldView.getSquareHeight() - bmpHeight)), null);

@@ -31,9 +31,9 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
     public static final byte FIELD_SIZE_Y = 15;
     public static final byte ORCAS_PERCENT_FILLING = 5;
     public static final byte PENGUINS_PERCENT_FILLING = 20;
+    public static final int UPDATE_POSITIONS_DELAY=300;
 
     private PlayingWorldThread playingWorldThread;
-    private Activity activity;
 
     private int screenWidth;
     private int screenHeight;
@@ -55,6 +55,8 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
 
     private Bitmap orcaBmp, penguinBmp;
 
+    private boolean updatePositionsFlag;
+
 
     public PlayingWorldView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -75,6 +77,8 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
 
         orcaBmp = BitmapFactory.decodeResource(getResources(), R.drawable.orca);
         penguinBmp = BitmapFactory.decodeResource(getResources(), R.drawable.tux);
+
+
     }
 
     @Override
@@ -86,8 +90,9 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         squareHeight = screenHeight / fieldSizeY;
     }
 
-//    TODO: обработка кнопки
     public void resetGame() {
+        updatePositionsFlag = false;
+
         for (int i = 0, j; i < fieldSizeY; i++)
             for (j=0; j < fieldSizeX; j++)
                 waterSpace[i][j] = -1;
@@ -142,7 +147,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                     if ((waterSpace[i][j] != -1) && (!(seaCreaturesMap.get(waterSpace[i][j]).isLifeStepExecute()))) {
                         seaCreaturesMap.get(waterSpace[i][j]).setLifeStepExecute(true);
                         seaCreaturesMap.get(waterSpace[i][j]).lifeStep();
-                        wait(500);
+                        wait(UPDATE_POSITIONS_DELAY);
                     }
                 }
             for (SeaCreature seaCreature:seaCreaturesMap.values())
@@ -150,18 +155,6 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         }catch (Exception ex){
             ex.printStackTrace();
         }
-//        Запускаем очередной жизненный цикл.
-//        try {
-//            for (SeaCreature seaCreature: seaCreaturesInOrder) {
-//                if (seaCreaturesMap.containsValue(seaCreature)) {
-//                    seaCreature.lifeStep();
-////                    wait();
-////                    Thread.sleep(1000);
-//                }
-//            }
-//        }catch (Exception ex){
-//            ex.printStackTrace();
-//        }
     }
 
     public synchronized void drawGameElements(Canvas canvas) {
@@ -174,7 +167,6 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
             canvas.drawLine(0, i * squareHeight, screenWidth, i * squareHeight, linePaint);
         }
 
-//      TODO: придумать другой способ правильного обхода массива с существами
         List<SeaCreature> seaCreaturesInOrder = new ArrayList<SeaCreature>();
         Paint creaturePaint = new Paint();
 //        Набираем список существ в порядке обхода поля.
@@ -184,14 +176,6 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                     seaCreaturesMap.get(waterSpace[i][j]).draw(canvas, creaturePaint);
                 }
             }
-        //notify();
-//        Рисуем создания.
-//        for (SeaCreature seaCreature: seaCreaturesInOrder) {
-//            if (seaCreaturesMap.containsValue(seaCreature)) {
-//                seaCreature.draw(canvas, creaturePaint);
-////            notify();
-//            }
-//        }
     }
 
 
@@ -238,6 +222,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         int action = e.getAction();
 
         if (action == MotionEvent.ACTION_DOWN) {
+//            updatePositionsFlag = true;
             updatePositions();
         }
         return true;
@@ -264,6 +249,10 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                 try {
                     canvas = surfaceHolder.lockCanvas(null);
                         synchronized (surfaceHolder) {
+//                            if (updatePositionsFlag) {
+//                                updatePositions();
+//                                updatePositionsFlag = false;
+//                            }
                             drawGameElements(canvas);
                     }
                 }

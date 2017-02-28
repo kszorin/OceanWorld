@@ -10,10 +10,10 @@ import kszorin.seaworld.view.PlayingWorldView;
 import java.util.*;
 
 public abstract class Animal extends SeaCreature {
-    protected byte age;
-    protected byte reproductionPeriod;
-    protected byte timeFromEating=0;
-    protected byte timeFromReproduction=0;
+    protected int age;
+    protected int reproductionPeriod;
+    protected int timeFromEating=0;
+//    protected int timeFromReproduction=0;
 
     protected EatingBehaviour eatingBehaviour;
     protected ReproductionBehaviour reproductionBehaviour;
@@ -25,7 +25,7 @@ public abstract class Animal extends SeaCreature {
         super(id, pos, playingWorldView, bmp);
         this.age = 0;
         this.timeFromEating = 0;
-        this.timeFromReproduction = 0;
+//        this.timeFromReproduction = 0;
     }
 
     public abstract Animal getBaby(int id, Position pos, Bitmap bitmap);

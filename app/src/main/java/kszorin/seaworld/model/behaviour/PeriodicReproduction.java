@@ -24,7 +24,6 @@ public class PeriodicReproduction implements ReproductionBehaviour {
             seaCreaturesMap.put(playingWorldView.getSeaCreaturesIdCounter(), baby);
             waterSpace[selectedFreePos.getY()][selectedFreePos.getX()] = playingWorldView.getSeaCreaturesIdCounter();
             playingWorldView.setSeaCreaturesIdCounter(playingWorldView.getSeaCreaturesIdCounter() + 1);
-
             System.out.printf("%c(%d) [%d,%d]: produce %c(%d) [%d,%d]\n", animal.getSpecies().toString().charAt(0), animal.getId(),
                     animal.getPos().getX(), animal.getPos().getY(), baby.getSpecies().toString().charAt(0), baby.getId(),
                     baby.getPos().getX(), baby.getPos().getY());

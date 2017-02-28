@@ -35,16 +35,33 @@ public class Penguin extends Animal {
 
     @Override
     public Animal getBaby(int id, Position pos, Bitmap bmp) {
-        return new Penguin(id, pos, playingWorldView, bmp);
+        Animal animal = new Penguin(id, pos, playingWorldView, bmp);
+//        animal.setLifeStepExecute(true);
+        return animal;
     }
 
     @Override
     public void draw(Canvas canvas, Paint paint) {
-        paint.setColor(Color.YELLOW);
-        canvas.drawRect(playingWorldView.getSquareWidth()/4 + playingWorldView.getSquareWidth() * pos.getX(),
-                playingWorldView.getSquareHeight()/4 + playingWorldView.getSquareHeight() * pos.getY(),
-                playingWorldView.getSquareWidth()*3/4 + playingWorldView.getSquareWidth() * pos.getX(),
-                playingWorldView.getSquareHeight()*3/4 + playingWorldView.getSquareHeight() * pos.getY(),
-                paint);
+        float scaleFactor;
+
+        if (age < 3)
+            scaleFactor = (1f + age % 3) / 3;
+        else
+            scaleFactor = 1;
+        int bmpWidth = (int) (scaleFactor * playingWorldView.getSquareWidth());
+        int bmpHeight = (int) (scaleFactor * playingWorldView.getSquareHeight());
+
+        if (age % PENGUIN_REPRODUCTION_PERIOD == PENGUIN_REPRODUCTION_PERIOD-1) {
+            paint.setColor(Color.GREEN);
+            canvas.drawRect(playingWorldView.getSquareWidth() * pos.getX() + (int) (0.5 * (playingWorldView.getSquareWidth() - bmpWidth)),
+                    playingWorldView.getSquareHeight() * pos.getY() + (int) (0.5 * (playingWorldView.getSquareHeight())),
+                    playingWorldView.getSquareWidth() * pos.getX() + (int) (0.5 * (playingWorldView.getSquareWidth() + bmpWidth)),
+                    playingWorldView.getSquareHeight() * pos.getY() + (int) (0.5 * (playingWorldView.getSquareHeight() + bmpHeight)),
+                    paint);
+        }
+
+        canvas.drawBitmap(Bitmap.createScaledBitmap(bmp, bmpWidth, bmpHeight, false),
+                playingWorldView.getSquareWidth() * pos.getX() + (int)(0.5 * (playingWorldView.getSquareWidth() - bmpWidth)),
+                playingWorldView.getSquareHeight() * pos.getY() + (int)(0.5 * (playingWorldView.getSquareHeight() - bmpHeight)), null);
     }
 }
