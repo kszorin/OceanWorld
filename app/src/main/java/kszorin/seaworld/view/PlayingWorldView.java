@@ -55,7 +55,6 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
 
     private Bitmap orcaBmp, penguinBmp;
 
-    private boolean updatePositionsFlag;
 
 
     public PlayingWorldView(Context context, AttributeSet attrs) {
@@ -91,8 +90,6 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
     }
 
     public void resetGame() {
-        updatePositionsFlag = false;
-
         for (int i = 0, j; i < fieldSizeY; i++)
             for (j=0; j < fieldSizeX; j++)
                 waterSpace[i][j] = -1;
@@ -140,7 +137,6 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
 
     private synchronized void updatePositions() {
         List<SeaCreature> seaCreaturesInOrder = new ArrayList<SeaCreature>();
-//        Набираем список существ в порядке обхода поля.
         try {
             for (int i = 0, j; i < fieldSizeY; i++)
                 for (j=0; j < fieldSizeX; j++) {
@@ -157,7 +153,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         }
     }
 
-    public synchronized void drawGameElements(Canvas canvas) {
+    public void drawGameElements(Canvas canvas) {
         canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), backgroundPaint);
 //        Рисуем линии.
         for (int i=0; i <=FIELD_SIZE_X; i++ ) {
@@ -169,7 +165,6 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
 
         List<SeaCreature> seaCreaturesInOrder = new ArrayList<SeaCreature>();
         Paint creaturePaint = new Paint();
-//        Набираем список существ в порядке обхода поля.
         for (int i = 0, j; i < fieldSizeY; i++)
             for (j=0; j < fieldSizeX; j++) {
                 if (waterSpace[i][j] != -1) {
@@ -177,7 +172,6 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                 }
             }
     }
-
 
     public void stopGame() {
 //        TODO: завершение игры
@@ -222,7 +216,6 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         int action = e.getAction();
 
         if (action == MotionEvent.ACTION_DOWN) {
-//            updatePositionsFlag = true;
             updatePositions();
         }
         return true;
@@ -249,10 +242,6 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                 try {
                     canvas = surfaceHolder.lockCanvas(null);
                         synchronized (surfaceHolder) {
-//                            if (updatePositionsFlag) {
-//                                updatePositions();
-//                                updatePositionsFlag = false;
-//                            }
                             drawGameElements(canvas);
                     }
                 }
