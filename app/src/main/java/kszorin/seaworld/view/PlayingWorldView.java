@@ -2,6 +2,8 @@ package kszorin.seaworld.view;
 
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -16,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import kszorin.seaworld.R;
 import kszorin.seaworld.model.Orca;
 import kszorin.seaworld.model.Penguin;
 import kszorin.seaworld.model.Position;
@@ -50,6 +53,8 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
     private Paint backgroundPaint;
     private Paint linePaint;
 
+    private Bitmap orcaBmp, penguinBmp;
+
 
     public PlayingWorldView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -67,6 +72,9 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         backgroundPaint.setColor(Color.WHITE);
         linePaint = new Paint();
         linePaint.setColor(Color.BLACK);
+
+        orcaBmp = BitmapFactory.decodeResource(getResources(), R.drawable.orca);
+        penguinBmp = BitmapFactory.decodeResource(getResources(), R.drawable.tux);
     }
 
     @Override
@@ -96,7 +104,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                 possiblePosX = possiblePos % fieldSizeX;
                 if (waterSpace[possiblePosY][possiblePosX] == -1 ) {
                     waterSpace[possiblePosY][possiblePosX] = seaCreaturesIdCounter;
-                    seaCreaturesMap.put(seaCreaturesIdCounter, new Orca(seaCreaturesIdCounter, new Position(possiblePosX, possiblePosY), this));
+                    seaCreaturesMap.put(seaCreaturesIdCounter, new Orca(seaCreaturesIdCounter, new Position(possiblePosX, possiblePosY), this, orcaBmp));
                     System.out.printf("Orca (id=%d) ДОБАВЛЕНА в [%d,%d]  \n", seaCreaturesIdCounter, possiblePosX, possiblePosY);
                     seaCreaturesIdCounter++;
                     break;
@@ -114,7 +122,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                 possiblePosX = possiblePos % fieldSizeX;
                 if (waterSpace[possiblePosY][possiblePosX] == -1 ) {
                     waterSpace[possiblePosY][possiblePosX] = seaCreaturesIdCounter;
-                    seaCreaturesMap.put(seaCreaturesIdCounter, new Penguin(seaCreaturesIdCounter, new Position(possiblePosX, possiblePosY), this));
+                    seaCreaturesMap.put(seaCreaturesIdCounter, new Penguin(seaCreaturesIdCounter, new Position(possiblePosX, possiblePosY), this, penguinBmp));
                     System.out.printf("Penguin (id=%d) ДОБАВЛЕН в [%d,%d]  \n", seaCreaturesIdCounter, possiblePosX, possiblePosY);
                     seaCreaturesIdCounter++;
                     break;

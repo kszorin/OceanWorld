@@ -1,6 +1,7 @@
 package kszorin.seaworld.model;
 
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -13,8 +14,8 @@ public class Penguin extends Animal {
     private static final int PENGUIN_REPRODUCTION_PERIOD = 3;
     private static final byte PENGUIN_ENVIRONS = 1;
 
-    public Penguin(int id, Position pos, PlayingWorldView playingWorldView) {
-        super(id, pos, playingWorldView);
+    public Penguin(int id, Position pos, PlayingWorldView playingWorldView, Bitmap bmp) {
+        super(id, pos, playingWorldView, bmp);
         species = SealCreatureSpecies.Penguin;
         environs = PENGUIN_ENVIRONS;
         reproductionPeriod = PENGUIN_REPRODUCTION_PERIOD;
@@ -33,8 +34,8 @@ public class Penguin extends Animal {
     }
 
     @Override
-    public Animal getBaby(int id, Position pos) {
-        return new Penguin(id, pos, playingWorldView);
+    public Animal getBaby(int id, Position pos, Bitmap bmp) {
+        return new Penguin(id, pos, playingWorldView, bmp);
     }
 
     @Override

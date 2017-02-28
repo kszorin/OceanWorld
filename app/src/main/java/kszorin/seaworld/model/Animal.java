@@ -1,5 +1,7 @@
 package kszorin.seaworld.model;
 
+import android.graphics.Bitmap;
+
 import kszorin.seaworld.model.behaviour.EatingBehaviour;
 import kszorin.seaworld.model.behaviour.MovingBehaviour;
 import kszorin.seaworld.model.behaviour.ReproductionBehaviour;
@@ -19,14 +21,14 @@ public abstract class Animal extends SeaCreature {
 
     protected List<SealCreatureSpecies> targetList = new ArrayList<SealCreatureSpecies>();
 
-    public Animal(int id, Position pos, PlayingWorldView playingWorldView) {
-        super(id, pos, playingWorldView);
+    public Animal(int id, Position pos, PlayingWorldView playingWorldView, Bitmap bmp) {
+        super(id, pos, playingWorldView, bmp);
         this.age = 0;
         this.timeFromEating = 0;
         this.timeFromReproduction = 0;
     }
 
-    public abstract Animal getBaby(int id, Position pos);
+    public abstract Animal getBaby(int id, Position pos, Bitmap bitmap);
 
     protected List<Position> findInEnvirons () {
         int waterSpace[][] = playingWorldView.getWaterSpace();

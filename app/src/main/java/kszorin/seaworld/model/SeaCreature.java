@@ -1,5 +1,6 @@
 package kszorin.seaworld.model;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 
@@ -11,6 +12,7 @@ public abstract class SeaCreature {
     protected Position pos;
     protected byte environs;
     protected PlayingWorldView playingWorldView;
+    protected Bitmap bmp;
     private boolean lifeStepExecute;
 
     public int getId() {
@@ -29,9 +31,10 @@ public abstract class SeaCreature {
         this.pos = pos;
     }
 
-    public SeaCreature(int id, Position pos, PlayingWorldView playingWorldView) {
+    public SeaCreature(int id, Position pos, PlayingWorldView playingWorldView, Bitmap bmp) {
         this.id = id;
         this.pos = pos;
+        this.bmp = bmp;
         this.playingWorldView = playingWorldView;
         lifeStepExecute = false;
     }
@@ -46,6 +49,10 @@ public abstract class SeaCreature {
 
     public void setLifeStepExecute(boolean lifeStepExecute) {
         this.lifeStepExecute = lifeStepExecute;
+    }
+
+    public Bitmap getBmp() {
+        return bmp;
     }
 
     @Override

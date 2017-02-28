@@ -1,5 +1,6 @@
 package kszorin.seaworld.model;
 
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
@@ -15,8 +16,8 @@ public class Orca extends Animal {
     private static final byte ORCA_HUNGER_DEATH_PERIOD = 3;
 
 
-    public Orca(int id, Position pos, PlayingWorldView playingWorldView) {
-        super(id, pos, playingWorldView);
+    public Orca(int id, Position pos, PlayingWorldView playingWorldView, Bitmap bmp) {
+        super(id, pos, playingWorldView, bmp);
         species = SealCreatureSpecies.Orca;
         reproductionPeriod = ORCA_REPRODUCTION_PERIOD;
         environs = ORCA_ENVIRONS;
@@ -49,19 +50,22 @@ public class Orca extends Animal {
     }
 
     @Override
-    public Animal getBaby(int id, Position pos) {
-        return new Orca(id, pos, playingWorldView);
+    public Animal getBaby(int id, Position pos, Bitmap bmp) {
+        return new Orca(id, pos, playingWorldView, bmp);
     }
 
     @Override
     public void draw(Canvas canvas, Paint paint) {
         paint.setColor(Color.RED);
-//        TODO: картинки вместо квадратов
-//        TODO: вписать в квадрат id существа.
-        canvas.drawRect(playingWorldView.getSquareWidth()/4 + playingWorldView.getSquareWidth() * pos.getX(),
-                playingWorldView.getSquareHeight()/4 + playingWorldView.getSquareHeight() * pos.getY(),
-                playingWorldView.getSquareWidth()*3/4 + playingWorldView.getSquareWidth() * pos.getX(),
-                playingWorldView.getSquareHeight()*3/4 + playingWorldView.getSquareHeight() * pos.getY(),
-                paint);
+        float scaleFactor;
+
+        if (age < 3)
+            scaleFactor = (1f + age % 3) / 3;
+        else
+            scaleFactor = 1;
+        int bmpWidth = (int) (scaleFactor * playingWorldView.getSquareWidth()), bmpHeight = (int) (scaleFactor * playingWorldView.getSquareHeight());
+        canvas.drawBitmap(Bitmap.createScaledBitmap(bmp, bmpWidth, bmpHeight, false),
+                playingWorldView.getSquareWidth() * pos.getX() + (int)(0.5 * (playingWorldView.getSquareWidth() - bmpWidth)),
+                playingWorldView.getSquareHeight() * pos.getY() + (int)(0.5 * (playingWorldView.getSquareHeight() - bmpHeight)), null);
     }
 }

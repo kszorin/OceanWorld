@@ -20,7 +20,7 @@ public class PeriodicReproduction implements ReproductionBehaviour {
             int bufferRandomNum = (int) (Math.random() * (foundPositionsInEnvirons.size()));
             Position selectedFreePos = foundPositionsInEnvirons.get(bufferRandomNum);
 //        Создаём детёныша на свободном месте.
-            Animal baby = animal.getBaby(playingWorldView.getSeaCreaturesIdCounter(), selectedFreePos);
+            Animal baby = animal.getBaby(playingWorldView.getSeaCreaturesIdCounter(), selectedFreePos, animal.getBmp());
             seaCreaturesMap.put(playingWorldView.getSeaCreaturesIdCounter(), baby);
             waterSpace[selectedFreePos.getY()][selectedFreePos.getX()] = playingWorldView.getSeaCreaturesIdCounter();
             playingWorldView.setSeaCreaturesIdCounter(playingWorldView.getSeaCreaturesIdCounter() + 1);
