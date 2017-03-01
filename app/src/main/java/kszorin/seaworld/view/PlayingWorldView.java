@@ -34,6 +34,8 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
     public static final int UPDATE_POSITIONS_DELAY=300;
 
     private PlayingWorldThread playingWorldThread;
+    private UpdatePositionThread updatePositionThread;
+    private boolean updateFlag;
 
     private int screenWidth;
     private int screenHeight;
@@ -90,6 +92,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
     }
 
     public void resetGame() {
+        updateFlag = false;
         for (int i = 0, j; i < fieldSizeY; i++)
             for (j=0; j < fieldSizeX; j++)
                 waterSpace[i][j] = -1;
@@ -173,16 +176,6 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
             }
     }
 
-    public void stopGame() {
-//        TODO: завершение игры
-        if (playingWorldThread != null)
-            playingWorldThread.setThreadIsRunning(false);
-    }
-
-    public void releaseResources() {
-//        TODO: освобожение ресурсов
-    }
-
     @Override
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
     }
@@ -193,6 +186,10 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         playingWorldThread = new PlayingWorldThread(holder);
         playingWorldThread.setThreadIsRunning(true);
         playingWorldThread.start();
+
+        updatePositionThread = new UpdatePositionThread(holder);
+        updatePositionThread.setThreadIsRunning(true);
+        updatePositionThread.start();
     }
 
     @Override
@@ -200,6 +197,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         // Обеспечить корректную зависимость потока
         boolean retry = true;
         playingWorldThread.setThreadIsRunning(false);
+        updatePositionThread.setThreadIsRunning(false);
 
         while (retry) {
             try {
@@ -219,6 +217,38 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
             updatePositions();
         }
         return true;
+    }
+
+    private class UpdatePositionThread extends Thread {
+        private SurfaceHolder surfaceHolder;
+        private boolean threadIsRunning = true;
+
+        public UpdatePositionThread(SurfaceHolder surfaceHolder) {
+            this.surfaceHolder = surfaceHolder;
+            setName("UpdatePositionThread");
+        }
+
+        public void setThreadIsRunning(boolean threadIsRunning) {
+            this.threadIsRunning = threadIsRunning;
+        }
+
+        @Override
+        public void run() {
+            Canvas canvas = null;
+
+            while (threadIsRunning) {
+                try {
+                    canvas = surfaceHolder.lockCanvas(null);
+                    synchronized (surfaceHolder) {
+                        updatePositions();
+                    }
+                }
+                finally {
+                    if (canvas != null)
+                        surfaceHolder.unlockCanvasAndPost(canvas);
+                }
+            }
+        }
     }
 
     private class PlayingWorldThread extends Thread {
@@ -251,6 +281,16 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                 }
             }
         }
+    }
+
+    public void stopGame() {
+//        TODO: завершение игры
+        if (playingWorldThread != null)
+            playingWorldThread.setThreadIsRunning(false);
+    }
+
+    public void releaseResources() {
+//        TODO: освобожение ресурсов
     }
 
     public Map<Integer, SeaCreature> getSeaCreaturesMap() {
