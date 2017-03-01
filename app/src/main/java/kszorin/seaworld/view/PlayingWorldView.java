@@ -31,7 +31,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
     public static final byte FIELD_SIZE_Y = 15;
     public static final byte ORCAS_PERCENT_FILLING = 5;
     public static final byte PENGUINS_PERCENT_FILLING = 20;
-    public static final int UPDATE_POSITIONS_DELAY=300;
+    public static final int UPDATE_POSITIONS_DELAY=500;
 
     private PlayingWorldThread playingWorldThread;
     private UpdatePositionThread updatePositionThread;
@@ -157,15 +157,15 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
             }
     }
 
-    private synchronized void updatePositions() {
+    private void updatePositions() {
         try {
             for (int i = 0, j; i < fieldSizeY; i++)
                 for (j=0; j < fieldSizeX; j++) {
-                    if ((waterSpace[i][j] != -1) && (!(seaCreaturesMap.get(waterSpace[i][j]).isLifeStepExecute()))) {
+                    if (updateFlag && (waterSpace[i][j] != -1) && (!(seaCreaturesMap.get(waterSpace[i][j]).isLifeStepExecute()))) {
                         seaCreaturesMap.get(waterSpace[i][j]).setLifeStepExecute(true);
                         seaCreaturesMap.get(waterSpace[i][j]).lifeStep();
-//                        Thread.sleep(UPDATE_POSITIONS_DELAY);
-                        wait(UPDATE_POSITIONS_DELAY);
+                        Thread.sleep(UPDATE_POSITIONS_DELAY);
+//                        wait();
                     }
                 }
             for (SeaCreature seaCreature:seaCreaturesMap.values())
@@ -190,6 +190,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         updatePositionThread.setThreadIsRunning(true);
         updatePositionThread.start();
 
+
     }
 
     @Override
@@ -198,6 +199,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         boolean retry = true;
         playingWorldThread.setThreadIsRunning(false);
         updatePositionThread.setThreadIsRunning(false);
+        updateFlag = false;
 
         while (retry) {
             try {
@@ -216,7 +218,9 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
 
         if (action == MotionEvent.ACTION_DOWN) {
 //            updatePositions();
-            Log.i("MainThread", "Клик по экрану");
+            Log.i("MainThread:", "Клик по экрану");
+//            Log.i("MainThread (PWThread):", String.valueOf(playingWorldThread.getState()));
+//            Log.i("MainThread (UThread):", String.valueOf(updatePositionThread.getState()));
             updateFlag = true;
         }
         return true;
@@ -256,11 +260,9 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
     }
 
     private class UpdatePositionThread extends Thread {
-        private SurfaceHolder surfaceHolder;
         private boolean threadIsRunning = true;
 
         public UpdatePositionThread(SurfaceHolder surfaceHolder) {
-            this.surfaceHolder = surfaceHolder;
             setName("UpdatePositionThread");
         }
 
@@ -270,12 +272,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
 
         @Override
         public void run() {
-            Canvas canvas = null;
-
             while (threadIsRunning) {
-                try {
-                    canvas = surfaceHolder.lockCanvas(null);
-                    synchronized (surfaceHolder) {
                         if (updateFlag) {
 //                            Log.i("SubThread #2", "Начало рассчётов");
 //                            for (int i = 0; i < 10; i++) {
@@ -286,15 +283,11 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                             updatePositions();
                             updateFlag = false;
                         }
-                    }
-                }
+//                    }
+//                }
 //                catch (InterruptedException  iex) {
 //                    iex.printStackTrace();
 //                }
-                finally {
-                    if (canvas != null)
-                        surfaceHolder.unlockCanvasAndPost(canvas);
-                }
             }
         }
     }
