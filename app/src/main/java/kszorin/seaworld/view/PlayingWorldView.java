@@ -138,24 +138,6 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         }
     }
 
-    private synchronized void updatePositions() {
-        List<SeaCreature> seaCreaturesInOrder = new ArrayList<SeaCreature>();
-        try {
-            for (int i = 0, j; i < fieldSizeY; i++)
-                for (j=0; j < fieldSizeX; j++) {
-                    if ((waterSpace[i][j] != -1) && (!(seaCreaturesMap.get(waterSpace[i][j]).isLifeStepExecute()))) {
-                        seaCreaturesMap.get(waterSpace[i][j]).setLifeStepExecute(true);
-                        seaCreaturesMap.get(waterSpace[i][j]).lifeStep();
-                        wait(UPDATE_POSITIONS_DELAY);
-                    }
-                }
-            for (SeaCreature seaCreature:seaCreaturesMap.values())
-                seaCreature.setLifeStepExecute(false);
-        }catch (Exception ex){
-            ex.printStackTrace();
-        }
-    }
-
     public void drawGameElements(Canvas canvas) {
         canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), backgroundPaint);
 //        Рисуем линии.
@@ -166,7 +148,6 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
             canvas.drawLine(0, i * squareHeight, screenWidth, i * squareHeight, linePaint);
         }
 
-        List<SeaCreature> seaCreaturesInOrder = new ArrayList<SeaCreature>();
         Paint creaturePaint = new Paint();
         for (int i = 0, j; i < fieldSizeY; i++)
             for (j=0; j < fieldSizeX; j++) {
@@ -174,6 +155,24 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                     seaCreaturesMap.get(waterSpace[i][j]).draw(canvas, creaturePaint);
                 }
             }
+    }
+
+    private synchronized void updatePositions() {
+        try {
+            for (int i = 0, j; i < fieldSizeY; i++)
+                for (j=0; j < fieldSizeX; j++) {
+                    if ((waterSpace[i][j] != -1) && (!(seaCreaturesMap.get(waterSpace[i][j]).isLifeStepExecute()))) {
+                        seaCreaturesMap.get(waterSpace[i][j]).setLifeStepExecute(true);
+                        seaCreaturesMap.get(waterSpace[i][j]).lifeStep();
+//                        Thread.sleep(UPDATE_POSITIONS_DELAY);
+                        wait(UPDATE_POSITIONS_DELAY);
+                    }
+                }
+            for (SeaCreature seaCreature:seaCreaturesMap.values())
+                seaCreature.setLifeStepExecute(false);
+        }catch (InterruptedException ex){
+            ex.printStackTrace();
+        }
     }
 
     @Override
@@ -190,6 +189,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         updatePositionThread = new UpdatePositionThread(holder);
         updatePositionThread.setThreadIsRunning(true);
         updatePositionThread.start();
+
     }
 
     @Override
@@ -215,7 +215,9 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         int action = e.getAction();
 
         if (action == MotionEvent.ACTION_DOWN) {
-            updatePositions();
+//            updatePositions();
+            Log.i("MainThread", "Клик по экрану");
+            updateFlag = true;
         }
         return true;
     }
@@ -241,6 +243,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                 try {
                     canvas = surfaceHolder.lockCanvas(null);
                     synchronized (surfaceHolder) {
+                        Log.i("SubThread #1", "Отрисовка элементов");
                         drawGameElements(canvas);
                     }
                 }
@@ -273,9 +276,21 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                 try {
                     canvas = surfaceHolder.lockCanvas(null);
                     synchronized (surfaceHolder) {
-                        updatePositions();
+                        if (updateFlag) {
+//                            Log.i("SubThread #2", "Начало рассчётов");
+//                            for (int i = 0; i < 10; i++) {
+//                                Log.i("SubThread #2", "Процесс подсчёта... " + String.valueOf(i));
+//                                Thread.sleep(300);
+//                            }
+//                            Log.i("SubThread #2", "Конец рассчётов");
+                            updatePositions();
+                            updateFlag = false;
+                        }
                     }
                 }
+//                catch (InterruptedException  iex) {
+//                    iex.printStackTrace();
+//                }
                 finally {
                     if (canvas != null)
                         surfaceHolder.unlockCanvasAndPost(canvas);
