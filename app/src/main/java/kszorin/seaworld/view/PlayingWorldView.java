@@ -1,6 +1,5 @@
 package kszorin.seaworld.view;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -13,9 +12,7 @@ import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import kszorin.seaworld.R;
@@ -25,15 +22,13 @@ import kszorin.seaworld.model.Position;
 import kszorin.seaworld.model.SeaCreature;
 
 public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callback {
-    private static final String TAG = "MainView";
-
     public static final byte FIELD_SIZE_X = 10;
     public static final byte FIELD_SIZE_Y = 15;
     public static final byte ORCAS_PERCENT_FILLING = 5;
     public static final byte PENGUINS_PERCENT_FILLING = 20;
     public static final int UPDATE_POSITIONS_DELAY=500;
 
-    private PlayingWorldThread playingWorldThread;
+    private DrawWorldThread drawWorldThread;
     private UpdatePositionThread updatePositionThread;
     private boolean updateFlag;
 
@@ -56,8 +51,6 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
     private Paint linePaint;
 
     private Bitmap orcaBmp, penguinBmp;
-
-
 
     public PlayingWorldView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -138,7 +131,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         }
     }
 
-    public void drawGameElements(Canvas canvas) {
+    public void drawElements(Canvas canvas) {
         canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), backgroundPaint);
 //        Рисуем линии.
         for (int i=0; i <=FIELD_SIZE_X; i++ ) {
@@ -147,7 +140,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         for (int i=0; i <=FIELD_SIZE_Y; i++ ) {
             canvas.drawLine(0, i * squareHeight, screenWidth, i * squareHeight, linePaint);
         }
-
+//        Рисуем создания.
         Paint creaturePaint = new Paint();
         for (int i = 0, j; i < fieldSizeY; i++)
             for (j=0; j < fieldSizeX; j++) {
@@ -165,7 +158,6 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                         seaCreaturesMap.get(waterSpace[i][j]).setLifeStepExecute(true);
                         seaCreaturesMap.get(waterSpace[i][j]).lifeStep();
                         Thread.sleep(UPDATE_POSITIONS_DELAY);
-//                        wait();
                     }
                 }
             for (SeaCreature seaCreature:seaCreaturesMap.values())
@@ -182,32 +174,30 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         resetGame();
-        playingWorldThread = new PlayingWorldThread(holder);
-        playingWorldThread.setThreadIsRunning(true);
-        playingWorldThread.start();
+        drawWorldThread = new DrawWorldThread(holder);
+        drawWorldThread.setThreadIsRunning(true);
+        drawWorldThread.start();
 
         updatePositionThread = new UpdatePositionThread(holder);
         updatePositionThread.setThreadIsRunning(true);
         updatePositionThread.start();
-
-
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         // Обеспечить корректную зависимость потока
         boolean retry = true;
-        playingWorldThread.setThreadIsRunning(false);
+        drawWorldThread.setThreadIsRunning(false);
         updatePositionThread.setThreadIsRunning(false);
         updateFlag = false;
 
         while (retry) {
             try {
-                playingWorldThread.join();
+                drawWorldThread.join();
                 updatePositionThread.join();
                 retry = false;
-            } catch (InterruptedException e) {
-                Log.e(TAG, "Thread interrupted", e);
+            } catch (InterruptedException iex) {
+                iex.printStackTrace();
             }
         }
     }
@@ -217,20 +207,17 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         int action = e.getAction();
 
         if (action == MotionEvent.ACTION_DOWN) {
-//            updatePositions();
             Log.i("MainThread:", "Клик по экрану");
-//            Log.i("MainThread (PWThread):", String.valueOf(playingWorldThread.getState()));
-//            Log.i("MainThread (UThread):", String.valueOf(updatePositionThread.getState()));
             updateFlag = true;
         }
         return true;
     }
 
-    private class PlayingWorldThread extends Thread {
+    private class DrawWorldThread extends Thread {
         private SurfaceHolder surfaceHolder;
         private boolean threadIsRunning = true;
 
-        public PlayingWorldThread(SurfaceHolder surfaceHolder) {
+        public DrawWorldThread(SurfaceHolder surfaceHolder) {
             this.surfaceHolder = surfaceHolder;
             setName("PlayingWorldthread");
         }
@@ -248,7 +235,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                     canvas = surfaceHolder.lockCanvas(null);
                     synchronized (surfaceHolder) {
                         Log.i("SubThread #1", "Отрисовка элементов");
-                        drawGameElements(canvas);
+                        drawElements(canvas);
                     }
                 }
                 finally {
@@ -273,29 +260,19 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         @Override
         public void run() {
             while (threadIsRunning) {
-                        if (updateFlag) {
-//                            Log.i("SubThread #2", "Начало рассчётов");
-//                            for (int i = 0; i < 10; i++) {
-//                                Log.i("SubThread #2", "Процесс подсчёта... " + String.valueOf(i));
-//                                Thread.sleep(300);
-//                            }
-//                            Log.i("SubThread #2", "Конец рассчётов");
-                            updatePositions();
-                            updateFlag = false;
-                        }
-//                    }
-//                }
-//                catch (InterruptedException  iex) {
-//                    iex.printStackTrace();
-//                }
+                if (updateFlag) {
+                    updatePositions();
+                    updateFlag = false;
+                }
             }
         }
     }
 
     public void stopGame() {
-//        TODO: завершение игры
-        if (playingWorldThread != null)
-            playingWorldThread.setThreadIsRunning(false);
+        if (drawWorldThread != null)
+            drawWorldThread.setThreadIsRunning(false);
+        if (updatePositionThread != null)
+            updatePositionThread.setThreadIsRunning(false);
     }
 
     public void releaseResources() {
@@ -316,14 +293,6 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
 
     public byte getFieldSizeY() {
         return fieldSizeY;
-    }
-
-    public int getScreenWidth() {
-        return screenWidth;
-    }
-
-    public int getScreenHeight() {
-        return screenHeight;
     }
 
     public float getSquareHeight() {
