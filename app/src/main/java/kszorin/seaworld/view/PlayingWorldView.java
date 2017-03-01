@@ -22,11 +22,12 @@ import kszorin.seaworld.model.Position;
 import kszorin.seaworld.model.SeaCreature;
 
 public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callback {
-    private static final byte FIELD_SIZE_X = 5;
-    private static final byte FIELD_SIZE_Y = 7;
+    private static final byte FIELD_SIZE_X = 10;
+    private static final byte FIELD_SIZE_Y = 15;
     private static final byte ORCAS_PERCENT_FILLING = 5;
     private static final byte PENGUINS_PERCENT_FILLING = 20;
-    private static final int UPDATE_POSITIONS_DELAY = 400;
+    private static final int UPDATE_POSITIONS_DELAY = 300;
+    private static final int TEXT_SIZE_DIVISOR = 40;
 
     private DrawWorldThread drawWorldThread;
     private UpdatePositionThread updatePositionThread;
@@ -84,7 +85,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         screenWidth = w;
         screenHeight = h;
         squareWidth = screenWidth / fieldSizeX;
-        textSize = (int)screenHeight / 40;
+        textSize = (int)screenHeight / TEXT_SIZE_DIVISOR;
         squareHeight = (screenHeight - textSize) / fieldSizeY;
         textPaint.setTextSize(textSize);
     }
