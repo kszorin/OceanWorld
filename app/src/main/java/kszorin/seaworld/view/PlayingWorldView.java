@@ -20,14 +20,13 @@ import kszorin.seaworld.model.Orca;
 import kszorin.seaworld.model.Penguin;
 import kszorin.seaworld.model.Position;
 import kszorin.seaworld.model.SeaCreature;
-import kszorin.seaworld.model.SealCreatureSpecies;
 
 public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callback {
-    public static final byte FIELD_SIZE_X = 5;
-    public static final byte FIELD_SIZE_Y = 7;
-    public static final byte ORCAS_PERCENT_FILLING = 25;
-    public static final byte PENGUINS_PERCENT_FILLING = 20;
-    public static final int UPDATE_POSITIONS_DELAY=500;
+    private static final byte FIELD_SIZE_X = 5;
+    private static final byte FIELD_SIZE_Y = 7;
+    private static final byte ORCAS_PERCENT_FILLING = 5;
+    private static final byte PENGUINS_PERCENT_FILLING = 20;
+    private static final int UPDATE_POSITIONS_DELAY = 400;
 
     private DrawWorldThread drawWorldThread;
     private UpdatePositionThread updatePositionThread;
@@ -42,14 +41,16 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
     private float squareWidth;
     private float squareHeight;
 
-    private int orcasQuantity;
-    private int penguinsQuantity;
+    private int orcasQuantity = 0;
+    private int penguinsQuantity = 0;
     private int seaCreaturesIdCounter;
     private int waterSpace[][];
     private Map<Integer, SeaCreature> seaCreaturesMap;
 
     private Paint backgroundPaint;
     private Paint linePaint;
+    private Paint textPaint;
+    private int textSize;
 
     private Bitmap orcaBmp, penguinBmp;
 
@@ -68,6 +69,10 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         backgroundPaint.setColor(Color.WHITE);
         linePaint = new Paint();
         linePaint.setColor(Color.BLACK);
+        backgroundPaint = new Paint();
+        backgroundPaint.setColor(Color.WHITE);
+        textPaint = new Paint();
+        textPaint.setColor(Color.BLACK);
 
         orcaBmp = BitmapFactory.decodeResource(getResources(), R.drawable.orca);
         penguinBmp = BitmapFactory.decodeResource(getResources(), R.drawable.tux);
@@ -79,7 +84,9 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         screenWidth = w;
         screenHeight = h;
         squareWidth = screenWidth / fieldSizeX;
-        squareHeight = screenHeight / fieldSizeY;
+        textSize = (int)screenHeight / 40;
+        squareHeight = (screenHeight - textSize) / fieldSizeY;
+        textPaint.setTextSize(textSize);
     }
 
     public void resetGame() {
@@ -137,7 +144,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), backgroundPaint);
 //        Рисуем линии.
         for (int i=0; i <=FIELD_SIZE_X; i++ ) {
-            canvas.drawLine(i * squareWidth, 0, i * squareWidth, screenHeight, linePaint);
+            canvas.drawLine(i * squareWidth, 0, i * squareWidth, (screenHeight - textSize), linePaint);
         }
         for (int i=0; i <=FIELD_SIZE_Y; i++ ) {
             canvas.drawLine(0, i * squareHeight, screenWidth, i * squareHeight, linePaint);
@@ -150,6 +157,11 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                     seaCreaturesMap.get(waterSpace[i][j]).draw(canvas, creaturePaint);
                 }
             }
+    }
+
+    private void drawCreaturesQuantity(Canvas canvas) {
+        canvas.drawText("O: " + orcasQuantity, 0, screenHeight, textPaint);
+        canvas.drawText("P: " + penguinsQuantity, screenWidth/2, screenHeight, textPaint);
     }
 
     private void updatePositions() {
@@ -238,8 +250,8 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                 try {
                     canvas = surfaceHolder.lockCanvas(null);
                     synchronized (surfaceHolder) {
-                        Log.i("SubThread #1", "Отрисовка элементов");
                         drawElements(canvas);
+                        drawCreaturesQuantity(canvas);
                     }
                 }
                 finally {
