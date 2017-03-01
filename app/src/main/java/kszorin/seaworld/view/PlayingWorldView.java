@@ -25,9 +25,9 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
     public static final byte FIELD_SIZE_Y = 15;
     private static final byte ORCAS_PERCENT_FILLING = 5;
     private static final byte PENGUINS_PERCENT_FILLING = 50;
-    private static final int UPDATE_POSITIONS_DELAY = 100;
+    private static final int UPDATE_POSITIONS_DELAY = 300;
     private static final int TEXT_SIZE_DIVISOR = 40;
-    public static final int CLEAR_WATER_CODE = -1;
+    public static final byte CLEAR_WATER_CODE = -1;
 
     private DrawWorldThread drawWorldThread;
     private UpdatePositionsThread updatePositionsThread;
@@ -44,9 +44,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
 //    В отображении ключём является id персонажа, а содержимым - сам персонаж.
     private Map<Integer, SeaCreature> seaCreaturesMap;
 
-    private Paint backgroundPaint, linePaint, textPaint;
     private int textSize;
-
     private Bitmap orcaBmp, penguinBmp;
 
     public PlayingWorldView(Context context, AttributeSet attrs) {
@@ -55,13 +53,6 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
 
         waterSpace = new int[FIELD_SIZE_Y][FIELD_SIZE_X];
         seaCreaturesMap = new HashMap<Integer, SeaCreature>();
-
-        backgroundPaint = new Paint();
-        backgroundPaint.setColor(Color.WHITE);
-        linePaint = new Paint();
-        linePaint.setColor(Color.BLACK);
-        textPaint = new Paint();
-        textPaint.setColor(Color.BLACK);
 
         orcaBmp = BitmapFactory.decodeResource(getResources(), R.drawable.orca);
         penguinBmp = BitmapFactory.decodeResource(getResources(), R.drawable.tux);
@@ -75,7 +66,6 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         squareWidth = screenWidth / FIELD_SIZE_X;
         textSize = screenHeight / TEXT_SIZE_DIVISOR;
         squareHeight = (screenHeight - textSize) / FIELD_SIZE_Y;
-        textPaint.setTextSize(textSize);
     }
 
     public void resetGame() {
@@ -129,6 +119,16 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
     }
 
     private void drawWorld(Canvas canvas) {
+        Paint backgroundPaint, linePaint, textPaint;
+
+        backgroundPaint = new Paint();
+        backgroundPaint.setColor(Color.WHITE);
+        linePaint = new Paint();
+        linePaint.setColor(Color.BLACK);
+        textPaint = new Paint();
+        textPaint.setColor(Color.BLACK);
+        textPaint.setTextSize(textSize);
+
         canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), backgroundPaint);
 //        Рисуем линии.
         for (int i=0; i <=FIELD_SIZE_X; i++ ) {
