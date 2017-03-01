@@ -3,6 +3,7 @@ package kszorin.seaworld.model.behaviour;
 import kszorin.seaworld.model.Animal;
 import kszorin.seaworld.model.Position;
 import kszorin.seaworld.model.SeaCreature;
+import kszorin.seaworld.model.SealCreatureSpecies;
 import kszorin.seaworld.view.PlayingWorldView;
 
 import java.util.List;
@@ -24,10 +25,18 @@ public class Hunting implements EatingBehaviour {
                     seaCreaturesMap.get(waterSpace[selectedTargetPos.getY()][selectedTargetPos.getX()]).getSpecies().toString().charAt(0),
                     waterSpace[selectedTargetPos.getY()][selectedTargetPos.getX()], selectedTargetPos.getX(), selectedTargetPos.getY());
 
+            switch (seaCreaturesMap.get(waterSpace[selectedTargetPos.getY()][selectedTargetPos.getX()]).getSpecies()) {
+                case Orca: playingWorldView.setOrcasQuantity(playingWorldView.getOrcasQuantity() - 1);
+                    break;
+                case Penguin: playingWorldView.setPenguinsQuantity(playingWorldView.getPenguinsQuantity() - 1);
+                    break;
+            }
             seaCreaturesMap.remove(waterSpace[selectedTargetPos.getY()][selectedTargetPos.getX()]);
             waterSpace[selectedTargetPos.getY()][selectedTargetPos.getX()] = waterSpace[pos.getY()][pos.getX()];
             waterSpace[pos.getY()][pos.getX()] = -1;
             seaCreaturesMap.get(animal.getId()).setPos(selectedTargetPos);
+
+
 
             return true;
         }

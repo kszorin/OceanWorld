@@ -20,11 +20,12 @@ import kszorin.seaworld.model.Orca;
 import kszorin.seaworld.model.Penguin;
 import kszorin.seaworld.model.Position;
 import kszorin.seaworld.model.SeaCreature;
+import kszorin.seaworld.model.SealCreatureSpecies;
 
 public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callback {
-    public static final byte FIELD_SIZE_X = 10;
-    public static final byte FIELD_SIZE_Y = 15;
-    public static final byte ORCAS_PERCENT_FILLING = 5;
+    public static final byte FIELD_SIZE_X = 5;
+    public static final byte FIELD_SIZE_Y = 7;
+    public static final byte ORCAS_PERCENT_FILLING = 25;
     public static final byte PENGUINS_PERCENT_FILLING = 20;
     public static final int UPDATE_POSITIONS_DELAY=500;
 
@@ -41,8 +42,8 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
     private float squareWidth;
     private float squareHeight;
 
-    private final int orcasQuantity;
-    private final int penguinsQuantity;
+    private int orcasQuantity;
+    private int penguinsQuantity;
     private int seaCreaturesIdCounter;
     private int waterSpace[][];
     private Map<Integer, SeaCreature> seaCreaturesMap;
@@ -59,8 +60,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
 
         this.fieldSizeX = FIELD_SIZE_X;
         this.fieldSizeY = FIELD_SIZE_Y;
-        orcasQuantity = fieldSizeX * fieldSizeY * ORCAS_PERCENT_FILLING / 100;
-        penguinsQuantity = fieldSizeX * fieldSizeY * PENGUINS_PERCENT_FILLING / 100;
+
         waterSpace = new int[fieldSizeY][fieldSizeX];
         seaCreaturesMap = new HashMap<Integer, SeaCreature>();
 
@@ -71,8 +71,6 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
 
         orcaBmp = BitmapFactory.decodeResource(getResources(), R.drawable.orca);
         penguinBmp = BitmapFactory.decodeResource(getResources(), R.drawable.tux);
-
-
     }
 
     @Override
@@ -86,6 +84,10 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
 
     public void resetGame() {
         updateFlag = false;
+
+        orcasQuantity = fieldSizeX * fieldSizeY * ORCAS_PERCENT_FILLING / 100;
+        penguinsQuantity = fieldSizeX * fieldSizeY * PENGUINS_PERCENT_FILLING / 100;
+
         for (int i = 0, j; i < fieldSizeY; i++)
             for (j=0; j < fieldSizeX; j++)
                 waterSpace[i][j] = -1;
@@ -131,7 +133,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         }
     }
 
-    public void drawElements(Canvas canvas) {
+    private void drawElements(Canvas canvas) {
         canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), backgroundPaint);
 //        Рисуем линии.
         for (int i=0; i <=FIELD_SIZE_X; i++ ) {
@@ -162,9 +164,11 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                 }
             for (SeaCreature seaCreature:seaCreaturesMap.values())
                 seaCreature.setLifeStepExecute(false);
+            System.out.printf("Количество касаток: %d. Количество пингвинов: %d\n", orcasQuantity, penguinsQuantity);
         }catch (InterruptedException ex){
             ex.printStackTrace();
         }
+
     }
 
     @Override
@@ -309,5 +313,21 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
 
     public void setSeaCreaturesIdCounter(int seaCreaturesIdCounter) {
         this.seaCreaturesIdCounter = seaCreaturesIdCounter;
+    }
+
+    public void setOrcasQuantity(int orcasQuantity) {
+        this.orcasQuantity = orcasQuantity;
+    }
+
+    public void setPenguinsQuantity(int penguinsQuantity) {
+        this.penguinsQuantity = penguinsQuantity;
+    }
+
+    public int getOrcasQuantity() {
+        return orcasQuantity;
+    }
+
+    public int getPenguinsQuantity() {
+        return penguinsQuantity;
     }
 }

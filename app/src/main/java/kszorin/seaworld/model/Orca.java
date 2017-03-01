@@ -40,6 +40,8 @@ public class Orca extends Animal {
         if (timeFromEating >= ORCA_HUNGER_DEATH_PERIOD) {
             playingWorldView.getWaterSpace()[pos.getY()][pos.getX()] = -1;
             playingWorldView.getSeaCreaturesMap().remove(this.id);
+            playingWorldView.setOrcasQuantity(playingWorldView.getOrcasQuantity() - 1);
+
             System.out.printf("%c(%d) [%d,%d]: died of hungry!\n", species.toString().charAt(0), id, pos.getX(), pos.getY());
         }
         else {

@@ -12,9 +12,6 @@ import android.widget.Button;
 import kszorin.seaworld.R;
 
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class MainActivityFragment extends Fragment {
 
     private PlayingWorldView playingWorldView;
