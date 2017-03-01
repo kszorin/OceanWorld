@@ -8,11 +8,10 @@ import kszorin.seaworld.R;
 
 public class MainActivity extends AppCompatActivity {
 
-//    TODO: обработка потери фокуса и т.п.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // если хотим, чтобы приложение постоянно имело портретную ориентацию
+
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
     }

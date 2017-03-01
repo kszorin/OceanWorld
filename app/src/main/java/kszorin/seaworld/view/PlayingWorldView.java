@@ -7,7 +7,6 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -22,56 +21,41 @@ import kszorin.seaworld.model.Position;
 import kszorin.seaworld.model.SeaCreature;
 
 public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callback {
-    private static final byte FIELD_SIZE_X = 10;
-    private static final byte FIELD_SIZE_Y = 15;
+    public static final byte FIELD_SIZE_X = 10;
+    public static final byte FIELD_SIZE_Y = 15;
     private static final byte ORCAS_PERCENT_FILLING = 5;
     private static final byte PENGUINS_PERCENT_FILLING = 20;
-    private static final int UPDATE_POSITIONS_DELAY = 300;
+    private static final int UPDATE_POSITIONS_DELAY = 400;
     private static final int TEXT_SIZE_DIVISOR = 40;
 
     private DrawWorldThread drawWorldThread;
-    private UpdatePositionThread updatePositionThread;
+    private UpdatePositionsThread updatePositionsThread;
     private boolean updateFlag;
 
-    private int screenWidth;
-    private int screenHeight;
+    private int screenWidth, screenHeight;
+    private float squareWidth, squareHeight;
 
-    private final byte fieldSizeX;
-    private final byte fieldSizeY;
-
-    private float squareWidth;
-    private float squareHeight;
-
-    private int orcasQuantity = 0;
-    private int penguinsQuantity = 0;
+    private int orcasQuantity = 0, penguinsQuantity = 0;
     private int seaCreaturesIdCounter;
     private int waterSpace[][];
     private Map<Integer, SeaCreature> seaCreaturesMap;
 
-    private Paint backgroundPaint;
-    private Paint linePaint;
-    private Paint textPaint;
+    private Paint backgroundPaint, linePaint, textPaint;
     private int textSize;
 
     private Bitmap orcaBmp, penguinBmp;
 
     public PlayingWorldView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        // Регистрация слушателя SurfaceHolder.Callback
         getHolder().addCallback(this);
 
-        this.fieldSizeX = FIELD_SIZE_X;
-        this.fieldSizeY = FIELD_SIZE_Y;
-
-        waterSpace = new int[fieldSizeY][fieldSizeX];
+        waterSpace = new int[FIELD_SIZE_Y][FIELD_SIZE_X];
         seaCreaturesMap = new HashMap<Integer, SeaCreature>();
 
         backgroundPaint = new Paint();
         backgroundPaint.setColor(Color.WHITE);
         linePaint = new Paint();
         linePaint.setColor(Color.BLACK);
-        backgroundPaint = new Paint();
-        backgroundPaint.setColor(Color.WHITE);
         textPaint = new Paint();
         textPaint.setColor(Color.BLACK);
 
@@ -84,32 +68,31 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         super.onSizeChanged(w, h, oldw, oldh);
         screenWidth = w;
         screenHeight = h;
-        squareWidth = screenWidth / fieldSizeX;
-        textSize = (int)screenHeight / TEXT_SIZE_DIVISOR;
-        squareHeight = (screenHeight - textSize) / fieldSizeY;
+        squareWidth = screenWidth / FIELD_SIZE_X;
+        textSize = screenHeight / TEXT_SIZE_DIVISOR;
+        squareHeight = (screenHeight - textSize) / FIELD_SIZE_Y;
         textPaint.setTextSize(textSize);
     }
 
     public void resetGame() {
         updateFlag = false;
 
-        orcasQuantity = fieldSizeX * fieldSizeY * ORCAS_PERCENT_FILLING / 100;
-        penguinsQuantity = fieldSizeX * fieldSizeY * PENGUINS_PERCENT_FILLING / 100;
-
-        for (int i = 0, j; i < fieldSizeY; i++)
-            for (j=0; j < fieldSizeX; j++)
+//        Выставляем первоначальные значения.
+        orcasQuantity = FIELD_SIZE_X * FIELD_SIZE_Y * ORCAS_PERCENT_FILLING / 100;
+        penguinsQuantity = FIELD_SIZE_X * FIELD_SIZE_Y * PENGUINS_PERCENT_FILLING / 100;
+        for (int i = 0, j; i < FIELD_SIZE_Y; i++)
+            for (j=0; j < FIELD_SIZE_X; j++)
                 waterSpace[i][j] = -1;
-//        Обнуляем счётчик и массив морских созданий.
         seaCreaturesIdCounter = 0;
         seaCreaturesMap.clear();
 
-//        Создаём и расставляем касаток на поле
+//        Создаём и расставляем касаток на поле.
         int possiblePos, possiblePosX, possiblePosY;
         for (int i=0; i < orcasQuantity; i++) {
             do {
-                possiblePos = (int) (Math.random() * (fieldSizeY * fieldSizeX));
-                possiblePosY = possiblePos / fieldSizeX;
-                possiblePosX = possiblePos % fieldSizeX;
+                possiblePos = (int) (Math.random() * (FIELD_SIZE_Y * FIELD_SIZE_X));
+                possiblePosY = possiblePos / FIELD_SIZE_X;
+                possiblePosX = possiblePos % FIELD_SIZE_X;
                 if (waterSpace[possiblePosY][possiblePosX] == -1 ) {
                     waterSpace[possiblePosY][possiblePosX] = seaCreaturesIdCounter;
                     seaCreaturesMap.put(seaCreaturesIdCounter, new Orca(seaCreaturesIdCounter, new Position(possiblePosX, possiblePosY), this, orcaBmp));
@@ -125,9 +108,9 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
 //        Создаём и расставляем пингвинов на поле
         for (int i=0; i < penguinsQuantity; i++) {
             do {
-                possiblePos = (int) (Math.random() * (fieldSizeY * fieldSizeX));
-                possiblePosY = possiblePos / fieldSizeX;
-                possiblePosX = possiblePos % fieldSizeX;
+                possiblePos = (int) (Math.random() * (FIELD_SIZE_Y * FIELD_SIZE_X));
+                possiblePosY = possiblePos / FIELD_SIZE_X;
+                possiblePosX = possiblePos % FIELD_SIZE_X;
                 if (waterSpace[possiblePosY][possiblePosX] == -1 ) {
                     waterSpace[possiblePosY][possiblePosX] = seaCreaturesIdCounter;
                     seaCreaturesMap.put(seaCreaturesIdCounter, new Penguin(seaCreaturesIdCounter, new Position(possiblePosX, possiblePosY), this, penguinBmp));
@@ -141,7 +124,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         }
     }
 
-    private void drawElements(Canvas canvas) {
+    private void drawWorld(Canvas canvas) {
         canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), backgroundPaint);
 //        Рисуем линии.
         for (int i=0; i <=FIELD_SIZE_X; i++ ) {
@@ -152,36 +135,35 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         }
 //        Рисуем создания.
         Paint creaturePaint = new Paint();
-        for (int i = 0, j; i < fieldSizeY; i++)
-            for (j=0; j < fieldSizeX; j++) {
+        for (int i = 0, j; i < FIELD_SIZE_Y; i++)
+            for (j=0; j < FIELD_SIZE_X; j++) {
                 if (waterSpace[i][j] != -1) {
                     seaCreaturesMap.get(waterSpace[i][j]).draw(canvas, creaturePaint);
                 }
             }
-    }
-
-    private void drawCreaturesQuantity(Canvas canvas) {
+//        Рисуем количество касаток и пингвинов.
         canvas.drawText("O: " + orcasQuantity, 0, screenHeight, textPaint);
         canvas.drawText("P: " + penguinsQuantity, screenWidth/2, screenHeight, textPaint);
     }
 
     private void updatePositions() {
         try {
-            for (int i = 0, j; i < fieldSizeY; i++)
-                for (j=0; j < fieldSizeX; j++) {
-                    if (updateFlag && (waterSpace[i][j] != -1) && (!(seaCreaturesMap.get(waterSpace[i][j]).isLifeStepExecute()))) {
-                        seaCreaturesMap.get(waterSpace[i][j]).setLifeStepExecute(true);
+//            Цикл жизнедеятельности созданий.
+            for (int i = 0, j; i < FIELD_SIZE_Y; i++)
+                for (j=0; j < FIELD_SIZE_X; j++) {
+                    if (updateFlag && (waterSpace[i][j] != -1) && (!(seaCreaturesMap.get(waterSpace[i][j]).isLifeStepExecuteFlag()))) {
+                        seaCreaturesMap.get(waterSpace[i][j]).setLifeStepExecuteFlag(true);
                         seaCreaturesMap.get(waterSpace[i][j]).lifeStep();
                         Thread.sleep(UPDATE_POSITIONS_DELAY);
                     }
                 }
+//            Сбрасываем признак того, что создание было уже обработано.
             for (SeaCreature seaCreature:seaCreaturesMap.values())
-                seaCreature.setLifeStepExecute(false);
+                seaCreature.setLifeStepExecuteFlag(false);
             System.out.printf("Количество касаток: %d. Количество пингвинов: %d\n", orcasQuantity, penguinsQuantity);
         }catch (InterruptedException ex){
             ex.printStackTrace();
         }
-
     }
 
     @Override
@@ -191,27 +173,27 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
         resetGame();
+
         drawWorldThread = new DrawWorldThread(holder);
         drawWorldThread.setThreadIsRunning(true);
         drawWorldThread.start();
 
-        updatePositionThread = new UpdatePositionThread(holder);
-        updatePositionThread.setThreadIsRunning(true);
-        updatePositionThread.start();
+        updatePositionsThread = new UpdatePositionsThread();
+        updatePositionsThread.setThreadIsRunning(true);
+        updatePositionsThread.start();
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
-        // Обеспечить корректную зависимость потока
         boolean retry = true;
         drawWorldThread.setThreadIsRunning(false);
-        updatePositionThread.setThreadIsRunning(false);
+        updatePositionsThread.setThreadIsRunning(false);
         updateFlag = false;
 
         while (retry) {
             try {
                 drawWorldThread.join();
-                updatePositionThread.join();
+                updatePositionsThread.join();
                 retry = false;
             } catch (InterruptedException iex) {
                 iex.printStackTrace();
@@ -222,11 +204,9 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
     @Override
     public boolean onTouchEvent(MotionEvent e) {
         int action = e.getAction();
-
-        if (action == MotionEvent.ACTION_DOWN) {
-            Log.i("MainThread:", "Клик по экрану");
+        if (action == MotionEvent.ACTION_DOWN)
             updateFlag = true;
-        }
+
         return true;
     }
 
@@ -251,8 +231,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                 try {
                     canvas = surfaceHolder.lockCanvas(null);
                     synchronized (surfaceHolder) {
-                        drawElements(canvas);
-                        drawCreaturesQuantity(canvas);
+                        drawWorld(canvas);
                     }
                 }
                 finally {
@@ -263,11 +242,11 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         }
     }
 
-    private class UpdatePositionThread extends Thread {
+    private class UpdatePositionsThread extends Thread {
         private boolean threadIsRunning = true;
 
-        public UpdatePositionThread(SurfaceHolder surfaceHolder) {
-            setName("UpdatePositionThread");
+        public UpdatePositionsThread() {
+            setName("UpdatePositionsThread");
         }
 
         public void setThreadIsRunning(boolean threadIsRunning) {
@@ -288,12 +267,8 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
     public void stopGame() {
         if (drawWorldThread != null)
             drawWorldThread.setThreadIsRunning(false);
-        if (updatePositionThread != null)
-            updatePositionThread.setThreadIsRunning(false);
-    }
-
-    public void releaseResources() {
-//        TODO: освобожение ресурсов
+        if (updatePositionsThread != null)
+            updatePositionsThread.setThreadIsRunning(false);
     }
 
     public Map<Integer, SeaCreature> getSeaCreaturesMap() {
@@ -302,14 +277,6 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
 
     public int[][] getWaterSpace() {
         return waterSpace;
-    }
-
-    public byte getFieldSizeX() {
-        return fieldSizeX;
-    }
-
-    public byte getFieldSizeY() {
-        return fieldSizeY;
     }
 
     public float getSquareHeight() {

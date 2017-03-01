@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
-import android.util.Log;
 
 import kszorin.seaworld.model.behaviour.Hunting;
 import kszorin.seaworld.model.behaviour.InEnvironsMoving;
@@ -15,7 +14,6 @@ public class Orca extends Animal {
     private static final byte ORCA_REPRODUCTION_PERIOD = 8;
     private static final byte ORCA_ENVIRONS = 1;
     private static final byte ORCA_HUNGER_DEATH_PERIOD = 3;
-
 
     public Orca(int id, Position pos, PlayingWorldView playingWorldView, Bitmap bmp) {
         super(id, pos, playingWorldView, bmp);
@@ -55,24 +53,21 @@ public class Orca extends Animal {
 
     @Override
     public Animal getBaby(int id, Position pos, Bitmap bmp) {
-        Animal animal = new Orca(id, pos, playingWorldView, bmp);
-//        animal.setLifeStepExecute(true);
-        return animal;
+        return new Orca(id, pos, playingWorldView, bmp);
     }
 
     @Override
     public void draw(Canvas canvas, Paint paint) {
-
+//        Для масштабирования картинок.
         float scaleFactor;
-
-        if (age < 3)
-            scaleFactor = (1f + age % 3) / 3;
+        if (age < BMP_SCALE)
+            scaleFactor = (1f + age % BMP_SCALE) / BMP_SCALE;
         else
             scaleFactor = 1;
         int bmpWidth = (int) (scaleFactor * playingWorldView.getSquareWidth()), bmpHeight = (int) (scaleFactor * playingWorldView.getSquareHeight());
 
-
-        if (timeFromEating == ORCA_HUNGER_DEATH_PERIOD-1) {
+//        Индикация голодной смерти.
+        if (timeFromEating == ORCA_HUNGER_DEATH_PERIOD - 1) {
             paint.setColor(Color.RED);
             canvas.drawRect(playingWorldView.getSquareWidth() * pos.getX() + (int) (0.5 * (playingWorldView.getSquareWidth() - bmpWidth)),
                     playingWorldView.getSquareHeight() * pos.getY() + (int) (0.5 * (playingWorldView.getSquareHeight() - bmpHeight)),
@@ -80,8 +75,8 @@ public class Orca extends Animal {
                     playingWorldView.getSquareHeight() * pos.getY() + (int) (0.5 * (playingWorldView.getSquareHeight())),
                     paint);
         }
-
-        if (age % ORCA_REPRODUCTION_PERIOD == ORCA_REPRODUCTION_PERIOD-1) {
+//        Индикация скорых родов.
+        if (age % ORCA_REPRODUCTION_PERIOD == ORCA_REPRODUCTION_PERIOD - 1) {
             paint.setColor(Color.GREEN);
             canvas.drawRect(playingWorldView.getSquareWidth() * pos.getX() + (int) (0.5 * (playingWorldView.getSquareWidth() - bmpWidth)),
                     playingWorldView.getSquareHeight() * pos.getY() + (int) (0.5 * (playingWorldView.getSquareHeight())),
@@ -89,7 +84,7 @@ public class Orca extends Animal {
                     playingWorldView.getSquareHeight() * pos.getY() + (int) (0.5 * (playingWorldView.getSquareHeight() + bmpHeight)),
                     paint);
         }
-
+//        Рисуем создание.
         canvas.drawBitmap(Bitmap.createScaledBitmap(bmp, bmpWidth, bmpHeight, false),
                 playingWorldView.getSquareWidth() * pos.getX() + (int)(0.5 * (playingWorldView.getSquareWidth() - bmpWidth)),
                 playingWorldView.getSquareHeight() * pos.getY() + (int)(0.5 * (playingWorldView.getSquareHeight() - bmpHeight)), null);

@@ -3,12 +3,10 @@ package kszorin.seaworld.view;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import kszorin.seaworld.R;
 
@@ -32,25 +30,9 @@ public class MainActivityFragment extends Fragment {
             resetGameButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.i("MainThread", "Клик по РЕСТАРТ");
                     playingWorldView.resetGame();
                 }
             });
-            /*TextView orcasQuantityTextView = (TextView) view.findViewById(R.id.orcas_quantity_textview);
-
-            view.post(new Runnable() {
-                @Override
-                public void run() {
-                    while (true) {
-                        try {
-                            ((TextView) view.findViewById(R.id.orcas_quantity_textview)).setText(String.valueOf(playingWorldView.getOrcasQuantity()));
-                            Thread.sleep(50);
-                        }catch (InterruptedException iex) {
-                            iex.printStackTrace();
-                        }
-                    }
-                }
-            });*/
         }
         return view;
     }

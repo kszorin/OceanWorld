@@ -35,22 +35,21 @@ public class Penguin extends Animal {
 
     @Override
     public Animal getBaby(int id, Position pos, Bitmap bmp) {
-        Animal animal = new Penguin(id, pos, playingWorldView, bmp);
-//        animal.setLifeStepExecute(true);
-        return animal;
+        return new Penguin(id, pos, playingWorldView, bmp);
     }
 
     @Override
     public void draw(Canvas canvas, Paint paint) {
+//        Для масштабирования картинок.
         float scaleFactor;
-
-        if (age < 3)
-            scaleFactor = (1f + age % 3) / 3;
+        if (age < BMP_SCALE)
+            scaleFactor = (1f + age % BMP_SCALE) / BMP_SCALE;
         else
             scaleFactor = 1;
         int bmpWidth = (int) (scaleFactor * playingWorldView.getSquareWidth());
         int bmpHeight = (int) (scaleFactor * playingWorldView.getSquareHeight());
 
+//        Индикация скорых родов.
         if (age % PENGUIN_REPRODUCTION_PERIOD == PENGUIN_REPRODUCTION_PERIOD-1) {
             paint.setColor(Color.GREEN);
             canvas.drawRect(playingWorldView.getSquareWidth() * pos.getX() + (int) (0.5 * (playingWorldView.getSquareWidth() - bmpWidth)),
@@ -60,6 +59,7 @@ public class Penguin extends Animal {
                     paint);
         }
 
+//        Рисуем создание.
         canvas.drawBitmap(Bitmap.createScaledBitmap(bmp, bmpWidth, bmpHeight, false),
                 playingWorldView.getSquareWidth() * pos.getX() + (int)(0.5 * (playingWorldView.getSquareWidth() - bmpWidth)),
                 playingWorldView.getSquareHeight() * pos.getY() + (int)(0.5 * (playingWorldView.getSquareHeight() - bmpHeight)), null);

@@ -10,10 +10,11 @@ import kszorin.seaworld.view.PlayingWorldView;
 import java.util.*;
 
 public abstract class Animal extends SeaCreature {
+    protected final int BMP_SCALE = 3;
+
     protected int age;
     protected int reproductionPeriod;
-    protected int timeFromEating=0;
-//    protected int timeFromReproduction=0;
+    protected int timeFromEating;
 
     protected EatingBehaviour eatingBehaviour;
     protected ReproductionBehaviour reproductionBehaviour;
@@ -21,15 +22,15 @@ public abstract class Animal extends SeaCreature {
 
     protected List<SealCreatureSpecies> targetList = new ArrayList<SealCreatureSpecies>();
 
-    public Animal(int id, Position pos, PlayingWorldView playingWorldView, Bitmap bmp) {
+    protected Animal(int id, Position pos, PlayingWorldView playingWorldView, Bitmap bmp) {
         super(id, pos, playingWorldView, bmp);
         this.age = 0;
         this.timeFromEating = 0;
-//        this.timeFromReproduction = 0;
     }
 
     public abstract Animal getBaby(int id, Position pos, Bitmap bitmap);
 
+//    Определение подходящих мест в окрестности текущего существа.
     protected List<Position> findInEnvirons () {
         int waterSpace[][] = playingWorldView.getWaterSpace();
         int beginRangeBypassX, endRangeBypassX, beginRangeBypassY, endRangeBypassY;
@@ -37,13 +38,15 @@ public abstract class Animal extends SeaCreature {
 //        Определяем границу окрестности по X.
         if ((beginRangeBypassX = pos.getX() - environs) < 0)
             beginRangeBypassX = 0;
-        if ((endRangeBypassX = pos.getX() + environs) > (playingWorldView.getFieldSizeX()-1))
-            endRangeBypassX = playingWorldView.getFieldSizeX()-1;
+        if ((endRangeBypassX = pos.getX() + environs) > (PlayingWorldView.FIELD_SIZE_X-1))
+            endRangeBypassX = PlayingWorldView.FIELD_SIZE_X-1;
+
 //        Определяем границу окрестности по Y.
         if ((beginRangeBypassY = pos.getY() - environs) < 0)
             beginRangeBypassY = 0;
-        if ((endRangeBypassY = pos.getY() + environs) > (playingWorldView.getFieldSizeY()-1))
-            endRangeBypassY = playingWorldView.getFieldSizeY()-1;
+        if ((endRangeBypassY = pos.getY() + environs) > (PlayingWorldView.FIELD_SIZE_Y-1))
+            endRangeBypassY = PlayingWorldView.FIELD_SIZE_Y-1;
+
 //        Определение подходящих мест в окрестности и заполнение буфера свободными позициями.
         List<Position> findPosBuffer = new ArrayList<Position>();
         for (int i = beginRangeBypassY, j; i <= endRangeBypassY; i++)
@@ -57,7 +60,7 @@ public abstract class Animal extends SeaCreature {
             }
         return findPosBuffer;
     }
-
+//    Поиск подходящих мест в окрестности текущего существа, где есть цели, перечисленные в списке.
     protected List<Position> findInEnvirons (List<SealCreatureSpecies> targets) {
         int waterSpace[][] = playingWorldView.getWaterSpace();
         Map<Integer, SeaCreature> seaCreaturesMap = playingWorldView.getSeaCreaturesMap();
@@ -69,13 +72,14 @@ public abstract class Animal extends SeaCreature {
 //        Определяем границу окрестности по X.
             if ((beginRangeBypassX = pos.getX() - environs) < 0)
                 beginRangeBypassX = 0;
-            if ((endRangeBypassX = pos.getX() + environs) > (playingWorldView.getFieldSizeX() - 1))
-                endRangeBypassX = playingWorldView.getFieldSizeX() - 1;
+            if ((endRangeBypassX = pos.getX() + environs) > (PlayingWorldView.FIELD_SIZE_X - 1))
+                endRangeBypassX = PlayingWorldView.FIELD_SIZE_X - 1;
+
 //        Определяем границу окрестности по Y.
             if ((beginRangeBypassY = pos.getY() - environs) < 0)
                 beginRangeBypassY = 0;
-            if ((endRangeBypassY = pos.getY() + environs) > (playingWorldView.getFieldSizeY() - 1))
-                endRangeBypassY = playingWorldView.getFieldSizeY() - 1;
+            if ((endRangeBypassY = pos.getY() + environs) > (PlayingWorldView.FIELD_SIZE_Y - 1))
+                endRangeBypassY = PlayingWorldView.FIELD_SIZE_Y - 1;
 
 //        Определение подходящих мест в окрестности и заполнение буфера свободными позициями.
             List<Position> findPosBuffer = new ArrayList<Position>();

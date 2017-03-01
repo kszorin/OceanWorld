@@ -13,7 +13,15 @@ public abstract class SeaCreature {
     protected byte environs;
     protected PlayingWorldView playingWorldView;
     protected Bitmap bmp;
-    private boolean lifeStepExecute;
+    private boolean lifeStepExecuteFlag;
+
+    protected SeaCreature(int id, Position pos, PlayingWorldView playingWorldView, Bitmap bmp) {
+        this.id = id;
+        this.pos = pos;
+        this.bmp = bmp;
+        this.playingWorldView = playingWorldView;
+        lifeStepExecuteFlag = false;
+    }
 
     public int getId() {
         return id;
@@ -31,24 +39,16 @@ public abstract class SeaCreature {
         this.pos = pos;
     }
 
-    public SeaCreature(int id, Position pos, PlayingWorldView playingWorldView, Bitmap bmp) {
-        this.id = id;
-        this.pos = pos;
-        this.bmp = bmp;
-        this.playingWorldView = playingWorldView;
-        lifeStepExecute = false;
-    }
-
     public abstract void lifeStep ();
 
     public abstract void draw (Canvas canvas, Paint paint);
 
-    public boolean isLifeStepExecute() {
-        return lifeStepExecute;
+    public boolean isLifeStepExecuteFlag() {
+        return lifeStepExecuteFlag;
     }
 
-    public void setLifeStepExecute(boolean lifeStepExecute) {
-        this.lifeStepExecute = lifeStepExecute;
+    public void setLifeStepExecuteFlag(boolean lifeStepExecuteFlag) {
+        this.lifeStepExecuteFlag = lifeStepExecuteFlag;
     }
 
     public Bitmap getBmp() {
@@ -65,7 +65,6 @@ public abstract class SeaCreature {
                 '}';
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -73,7 +72,8 @@ public abstract class SeaCreature {
 
         SeaCreature that = (SeaCreature) o;
 
-        if (id != that.id) return false;
+        if (id != that.id)
+            return false;
         return species == that.species;
 
     }
