@@ -24,12 +24,14 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
     public static final byte FIELD_SIZE_X = 10;
     public static final byte FIELD_SIZE_Y = 15;
     private static final byte ORCAS_PERCENT_FILLING = 5;
-    private static final byte PENGUINS_PERCENT_FILLING = 20;
-    private static final int UPDATE_POSITIONS_DELAY = 400;
+    private static final byte PENGUINS_PERCENT_FILLING = 50;
+    private static final int UPDATE_POSITIONS_DELAY = 100;
     private static final int TEXT_SIZE_DIVISOR = 40;
+    public static final int CLEAR_WATER_CODE = -1;
 
     private DrawWorldThread drawWorldThread;
     private UpdatePositionsThread updatePositionsThread;
+//    Флаг поднимается, когда кликаем по экрану.
     private boolean updateFlag;
 
     private int screenWidth, screenHeight;
@@ -37,7 +39,9 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
 
     private int orcasQuantity = 0, penguinsQuantity = 0;
     private int seaCreaturesIdCounter;
+//    В матрице содержится id персонажа либо (-1) если место пустое.
     private int waterSpace[][];
+//    В отображении ключём является id персонажа, а содержимым - сам персонаж.
     private Map<Integer, SeaCreature> seaCreaturesMap;
 
     private Paint backgroundPaint, linePaint, textPaint;
@@ -82,7 +86,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         penguinsQuantity = FIELD_SIZE_X * FIELD_SIZE_Y * PENGUINS_PERCENT_FILLING / 100;
         for (int i = 0, j; i < FIELD_SIZE_Y; i++)
             for (j=0; j < FIELD_SIZE_X; j++)
-                waterSpace[i][j] = -1;
+                waterSpace[i][j] = CLEAR_WATER_CODE;
         seaCreaturesIdCounter = 0;
         seaCreaturesMap.clear();
 
@@ -93,7 +97,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                 possiblePos = (int) (Math.random() * (FIELD_SIZE_Y * FIELD_SIZE_X));
                 possiblePosY = possiblePos / FIELD_SIZE_X;
                 possiblePosX = possiblePos % FIELD_SIZE_X;
-                if (waterSpace[possiblePosY][possiblePosX] == -1 ) {
+                if (waterSpace[possiblePosY][possiblePosX] == CLEAR_WATER_CODE ) {
                     waterSpace[possiblePosY][possiblePosX] = seaCreaturesIdCounter;
                     seaCreaturesMap.put(seaCreaturesIdCounter, new Orca(seaCreaturesIdCounter, new Position(possiblePosX, possiblePosY), this, orcaBmp));
                     System.out.printf("Orca (id=%d) ДОБАВЛЕНА в [%d,%d]  \n", seaCreaturesIdCounter, possiblePosX, possiblePosY);
@@ -105,13 +109,13 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
             } while(true);
         }
 
-//        Создаём и расставляем пингвинов на поле
+//        Создаём и расставляем пингвинов на поле.
         for (int i=0; i < penguinsQuantity; i++) {
             do {
                 possiblePos = (int) (Math.random() * (FIELD_SIZE_Y * FIELD_SIZE_X));
                 possiblePosY = possiblePos / FIELD_SIZE_X;
                 possiblePosX = possiblePos % FIELD_SIZE_X;
-                if (waterSpace[possiblePosY][possiblePosX] == -1 ) {
+                if (waterSpace[possiblePosY][possiblePosX] == CLEAR_WATER_CODE ) {
                     waterSpace[possiblePosY][possiblePosX] = seaCreaturesIdCounter;
                     seaCreaturesMap.put(seaCreaturesIdCounter, new Penguin(seaCreaturesIdCounter, new Position(possiblePosX, possiblePosY), this, penguinBmp));
                     System.out.printf("Penguin (id=%d) ДОБАВЛЕН в [%d,%d]  \n", seaCreaturesIdCounter, possiblePosX, possiblePosY);
@@ -133,15 +137,15 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         for (int i=0; i <=FIELD_SIZE_Y; i++ ) {
             canvas.drawLine(0, i * squareHeight, screenWidth, i * squareHeight, linePaint);
         }
-//        Рисуем создания.
+//        Рисуем персонажей.
         Paint creaturePaint = new Paint();
         for (int i = 0, j; i < FIELD_SIZE_Y; i++)
             for (j=0; j < FIELD_SIZE_X; j++) {
-                if (waterSpace[i][j] != -1) {
+                if (waterSpace[i][j] != CLEAR_WATER_CODE) {
                     seaCreaturesMap.get(waterSpace[i][j]).draw(canvas, creaturePaint);
                 }
             }
-//        Рисуем количество касаток и пингвинов.
+//        Печатаем количество касаток и пингвинов.
         canvas.drawText("O: " + orcasQuantity, 0, screenHeight, textPaint);
         canvas.drawText("P: " + penguinsQuantity, screenWidth/2, screenHeight, textPaint);
     }
@@ -151,13 +155,13 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
 //            Цикл жизнедеятельности созданий.
             for (int i = 0, j; i < FIELD_SIZE_Y; i++)
                 for (j=0; j < FIELD_SIZE_X; j++) {
-                    if (updateFlag && (waterSpace[i][j] != -1) && (!(seaCreaturesMap.get(waterSpace[i][j]).isLifeStepExecuteFlag()))) {
+                    if (updateFlag && (waterSpace[i][j] != CLEAR_WATER_CODE) && (!(seaCreaturesMap.get(waterSpace[i][j]).isLifeStepExecuteFlag()))) {
                         seaCreaturesMap.get(waterSpace[i][j]).setLifeStepExecuteFlag(true);
                         seaCreaturesMap.get(waterSpace[i][j]).lifeStep();
                         Thread.sleep(UPDATE_POSITIONS_DELAY);
                     }
                 }
-//            Сбрасываем признак того, что создание было уже обработано.
+//            Сбрасываем признак того, что персонаж был уже обработан.
             for (SeaCreature seaCreature:seaCreaturesMap.values())
                 seaCreature.setLifeStepExecuteFlag(false);
             System.out.printf("Количество касаток: %d. Количество пингвинов: %d\n", orcasQuantity, penguinsQuantity);
@@ -214,12 +218,12 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         private SurfaceHolder surfaceHolder;
         private boolean threadIsRunning = true;
 
-        public DrawWorldThread(SurfaceHolder surfaceHolder) {
+        DrawWorldThread(SurfaceHolder surfaceHolder) {
             this.surfaceHolder = surfaceHolder;
             setName("PlayingWorldthread");
         }
 
-        public void setThreadIsRunning(boolean threadIsRunning) {
+        void setThreadIsRunning(boolean threadIsRunning) {
             this.threadIsRunning = threadIsRunning;
         }
 
@@ -245,11 +249,11 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
     private class UpdatePositionsThread extends Thread {
         private boolean threadIsRunning = true;
 
-        public UpdatePositionsThread() {
+        UpdatePositionsThread() {
             setName("UpdatePositionsThread");
         }
 
-        public void setThreadIsRunning(boolean threadIsRunning) {
+        void setThreadIsRunning(boolean threadIsRunning) {
             this.threadIsRunning = threadIsRunning;
         }
 

@@ -13,18 +13,19 @@ public class PeriodicReproduction implements ReproductionBehaviour {
     public void reproduct(Animal animal, PlayingWorldView playingWorldView, List<Position> foundPositionsInEnvirons) {
         int waterSpace[][] = playingWorldView.getWaterSpace();
         Map<Integer, SeaCreature> seaCreaturesMap = playingWorldView.getSeaCreaturesMap();
-        Position pos = animal.getPos();
 
         if (foundPositionsInEnvirons.size() > 0) {
 //        Случайным образом выбираем позицию из буфера свободных мест.
             int bufferRandomNum = (int) (Math.random() * (foundPositionsInEnvirons.size()));
             Position selectedFreePos = foundPositionsInEnvirons.get(bufferRandomNum);
+
 //        Создаём детёныша на свободном месте.
             Animal baby = animal.getBaby(playingWorldView.getSeaCreaturesIdCounter(), selectedFreePos, animal.getBmp());
             seaCreaturesMap.put(playingWorldView.getSeaCreaturesIdCounter(), baby);
             waterSpace[selectedFreePos.getY()][selectedFreePos.getX()] = playingWorldView.getSeaCreaturesIdCounter();
             playingWorldView.setSeaCreaturesIdCounter(playingWorldView.getSeaCreaturesIdCounter() + 1);
 
+//            Для ведения статистики.
             switch (animal.getSpecies()) {
                 case Orca: playingWorldView.setOrcasQuantity(playingWorldView.getOrcasQuantity() + 1);
                     break;

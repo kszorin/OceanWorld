@@ -10,6 +10,8 @@ import kszorin.seaworld.model.behaviour.InEnvironsMoving;
 import kszorin.seaworld.model.behaviour.PeriodicReproduction;
 import kszorin.seaworld.view.PlayingWorldView;
 
+import static kszorin.seaworld.view.PlayingWorldView.CLEAR_WATER_CODE;
+
 public class Orca extends Animal {
     private static final byte ORCA_REPRODUCTION_PERIOD = 8;
     private static final byte ORCA_ENVIRONS = 1;
@@ -18,7 +20,6 @@ public class Orca extends Animal {
     public Orca(int id, Position pos, PlayingWorldView playingWorldView, Bitmap bmp) {
         super(id, pos, playingWorldView, bmp);
         species = SealCreatureSpecies.Orca;
-        reproductionPeriod = ORCA_REPRODUCTION_PERIOD;
         environs = ORCA_ENVIRONS;
         eatingBehaviour = new Hunting();
         reproductionBehaviour = new PeriodicReproduction();
@@ -28,6 +29,7 @@ public class Orca extends Animal {
 
     @Override
     public void lifeStep() {
+//        Попытка охоты. В случае неудачи - попытка обычного движения.
         if (eatingBehaviour.eat(this, playingWorldView, findInEnvirons (targetList))) {
             timeFromEating = 0;
         }
@@ -35,8 +37,9 @@ public class Orca extends Animal {
             movingBehaviour.move(this, playingWorldView, findInEnvirons());
             timeFromEating++;
         }
+//        Если не умирает от голода - производит потомство.
         if (timeFromEating >= ORCA_HUNGER_DEATH_PERIOD) {
-            playingWorldView.getWaterSpace()[pos.getY()][pos.getX()] = -1;
+            playingWorldView.getWaterSpace()[pos.getY()][pos.getX()] = CLEAR_WATER_CODE;
             playingWorldView.getSeaCreaturesMap().remove(this.id);
             playingWorldView.setOrcasQuantity(playingWorldView.getOrcasQuantity() - 1);
 
@@ -46,47 +49,50 @@ public class Orca extends Animal {
             age++;
             if ((age!=0) && (age % ORCA_REPRODUCTION_PERIOD == 0))
                 reproductionBehaviour.reproduct(this, playingWorldView, findInEnvirons());
-            else
-                reproductionPeriod++;
         }
     }
 
     @Override
     public Animal getBaby(int id, Position pos, Bitmap bmp) {
+//        Сейчас, если детёныш поялвяется впереди по ходу обхода поля, он успевает принять участие в текущем цикле.
+//        Я не стал это исправлять, т.к. посчитал интересным.
         return new Orca(id, pos, playingWorldView, bmp);
     }
 
     @Override
     public void draw(Canvas canvas, Paint paint) {
+        float squareWidth = playingWorldView.getSquareWidth(), squareHeight = playingWorldView.getSquareHeight();;
+
 //        Для масштабирования картинок.
         float scaleFactor;
         if (age < BMP_SCALE)
             scaleFactor = (1f + age % BMP_SCALE) / BMP_SCALE;
         else
             scaleFactor = 1;
-        int bmpWidth = (int) (scaleFactor * playingWorldView.getSquareWidth()), bmpHeight = (int) (scaleFactor * playingWorldView.getSquareHeight());
+        int bmpWidth = (int) (scaleFactor * squareWidth);
+        int bmpHeight = (int) (scaleFactor * squareHeight);
 
 //        Индикация голодной смерти.
         if (timeFromEating == ORCA_HUNGER_DEATH_PERIOD - 1) {
             paint.setColor(Color.RED);
-            canvas.drawRect(playingWorldView.getSquareWidth() * pos.getX() + (int) (0.5 * (playingWorldView.getSquareWidth() - bmpWidth)),
-                    playingWorldView.getSquareHeight() * pos.getY() + (int) (0.5 * (playingWorldView.getSquareHeight() - bmpHeight)),
-                    playingWorldView.getSquareWidth() * pos.getX() + (int) (0.5 * (playingWorldView.getSquareWidth() + bmpWidth)),
-                    playingWorldView.getSquareHeight() * pos.getY() + (int) (0.5 * (playingWorldView.getSquareHeight())),
+            canvas.drawRect(squareWidth * pos.getX() + (int) (0.5 * (squareWidth - bmpWidth)),
+                    squareHeight * pos.getY() + (int) (0.5 * (squareHeight - bmpHeight)),
+                    squareWidth * pos.getX() + (int) (0.5 * (squareWidth + bmpWidth)),
+                    squareHeight * pos.getY() + (int) (0.5 * squareHeight),
                     paint);
         }
 //        Индикация скорых родов.
         if (age % ORCA_REPRODUCTION_PERIOD == ORCA_REPRODUCTION_PERIOD - 1) {
             paint.setColor(Color.GREEN);
-            canvas.drawRect(playingWorldView.getSquareWidth() * pos.getX() + (int) (0.5 * (playingWorldView.getSquareWidth() - bmpWidth)),
-                    playingWorldView.getSquareHeight() * pos.getY() + (int) (0.5 * (playingWorldView.getSquareHeight())),
-                    playingWorldView.getSquareWidth() * pos.getX() + (int) (0.5 * (playingWorldView.getSquareWidth() + bmpWidth)),
-                    playingWorldView.getSquareHeight() * pos.getY() + (int) (0.5 * (playingWorldView.getSquareHeight() + bmpHeight)),
+            canvas.drawRect(squareWidth * pos.getX() + (int) (0.5 * (squareWidth - bmpWidth)),
+                    squareHeight * pos.getY() + (int) (0.5 * squareHeight),
+                    squareWidth * pos.getX() + (int) (0.5 * (squareWidth + bmpWidth)),
+                    squareHeight * pos.getY() + (int) (0.5 * (squareHeight + bmpHeight)),
                     paint);
         }
-//        Рисуем создание.
+//        Рисуем персонаж.
         canvas.drawBitmap(Bitmap.createScaledBitmap(bmp, bmpWidth, bmpHeight, false),
-                playingWorldView.getSquareWidth() * pos.getX() + (int)(0.5 * (playingWorldView.getSquareWidth() - bmpWidth)),
-                playingWorldView.getSquareHeight() * pos.getY() + (int)(0.5 * (playingWorldView.getSquareHeight() - bmpHeight)), null);
+                squareWidth * pos.getX() + (int)(0.5 * (squareWidth - bmpWidth)),
+                squareHeight * pos.getY() + (int)(0.5 * (squareHeight - bmpHeight)), null);
     }
 }

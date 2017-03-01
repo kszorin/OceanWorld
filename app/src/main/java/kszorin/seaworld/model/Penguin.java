@@ -18,7 +18,6 @@ public class Penguin extends Animal {
         super(id, pos, playingWorldView, bmp);
         species = SealCreatureSpecies.Penguin;
         environs = PENGUIN_ENVIRONS;
-        reproductionPeriod = PENGUIN_REPRODUCTION_PERIOD;
         eatingBehaviour = null;
         reproductionBehaviour = new PeriodicReproduction();
         movingBehaviour = new InEnvironsMoving();
@@ -40,28 +39,31 @@ public class Penguin extends Animal {
 
     @Override
     public void draw(Canvas canvas, Paint paint) {
+        float squareWidth = playingWorldView.getSquareWidth(), squareHeight = playingWorldView.getSquareHeight();
+
 //        Для масштабирования картинок.
         float scaleFactor;
         if (age < BMP_SCALE)
             scaleFactor = (1f + age % BMP_SCALE) / BMP_SCALE;
         else
             scaleFactor = 1;
-        int bmpWidth = (int) (scaleFactor * playingWorldView.getSquareWidth());
-        int bmpHeight = (int) (scaleFactor * playingWorldView.getSquareHeight());
+
+        int bmpWidth = (int) (scaleFactor * squareWidth);
+        int bmpHeight = (int) (scaleFactor * squareHeight);
 
 //        Индикация скорых родов.
-        if (age % PENGUIN_REPRODUCTION_PERIOD == PENGUIN_REPRODUCTION_PERIOD-1) {
+        if (age % PENGUIN_REPRODUCTION_PERIOD == PENGUIN_REPRODUCTION_PERIOD - 1) {
             paint.setColor(Color.GREEN);
-            canvas.drawRect(playingWorldView.getSquareWidth() * pos.getX() + (int) (0.5 * (playingWorldView.getSquareWidth() - bmpWidth)),
-                    playingWorldView.getSquareHeight() * pos.getY() + (int) (0.5 * (playingWorldView.getSquareHeight())),
-                    playingWorldView.getSquareWidth() * pos.getX() + (int) (0.5 * (playingWorldView.getSquareWidth() + bmpWidth)),
-                    playingWorldView.getSquareHeight() * pos.getY() + (int) (0.5 * (playingWorldView.getSquareHeight() + bmpHeight)),
+            canvas.drawRect(squareWidth * pos.getX() + (int) (0.5 * (squareWidth - bmpWidth)),
+                    squareHeight * pos.getY() + (int) (0.5 * squareHeight),
+                    squareWidth * pos.getX() + (int) (0.5 * (squareWidth + bmpWidth)),
+                    squareHeight * pos.getY() + (int) (0.5 * (squareHeight + bmpHeight)),
                     paint);
         }
 
 //        Рисуем создание.
         canvas.drawBitmap(Bitmap.createScaledBitmap(bmp, bmpWidth, bmpHeight, false),
-                playingWorldView.getSquareWidth() * pos.getX() + (int)(0.5 * (playingWorldView.getSquareWidth() - bmpWidth)),
-                playingWorldView.getSquareHeight() * pos.getY() + (int)(0.5 * (playingWorldView.getSquareHeight() - bmpHeight)), null);
+                squareWidth * pos.getX() + (int)(0.5 * (squareWidth - bmpWidth)),
+                squareHeight * pos.getY() + (int)(0.5 * (squareHeight - bmpHeight)), null);
     }
 }

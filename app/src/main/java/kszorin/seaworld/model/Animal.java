@@ -9,11 +9,12 @@ import kszorin.seaworld.view.PlayingWorldView;
 
 import java.util.*;
 
+import static kszorin.seaworld.view.PlayingWorldView.CLEAR_WATER_CODE;
+
 public abstract class Animal extends SeaCreature {
     protected final int BMP_SCALE = 3;
 
     protected int age;
-    protected int reproductionPeriod;
     protected int timeFromEating;
 
     protected EatingBehaviour eatingBehaviour;
@@ -38,14 +39,14 @@ public abstract class Animal extends SeaCreature {
 //        Определяем границу окрестности по X.
         if ((beginRangeBypassX = pos.getX() - environs) < 0)
             beginRangeBypassX = 0;
-        if ((endRangeBypassX = pos.getX() + environs) > (PlayingWorldView.FIELD_SIZE_X-1))
-            endRangeBypassX = PlayingWorldView.FIELD_SIZE_X-1;
+        if ((endRangeBypassX = pos.getX() + environs) > (PlayingWorldView.FIELD_SIZE_X - 1))
+            endRangeBypassX = PlayingWorldView.FIELD_SIZE_X - 1;
 
 //        Определяем границу окрестности по Y.
         if ((beginRangeBypassY = pos.getY() - environs) < 0)
             beginRangeBypassY = 0;
-        if ((endRangeBypassY = pos.getY() + environs) > (PlayingWorldView.FIELD_SIZE_Y-1))
-            endRangeBypassY = PlayingWorldView.FIELD_SIZE_Y-1;
+        if ((endRangeBypassY = pos.getY() + environs) > (PlayingWorldView.FIELD_SIZE_Y - 1))
+            endRangeBypassY = PlayingWorldView.FIELD_SIZE_Y - 1;
 
 //        Определение подходящих мест в окрестности и заполнение буфера свободными позициями.
         List<Position> findPosBuffer = new ArrayList<Position>();
@@ -54,7 +55,7 @@ public abstract class Animal extends SeaCreature {
                 if ((i == pos.getY()) && (j == pos.getX()))
                     continue;
                 else {
-                    if (waterSpace[i][j] == -1)
+                    if (waterSpace[i][j] == CLEAR_WATER_CODE)
                         findPosBuffer.add(new Position(j,i));
                 }
             }
@@ -88,7 +89,8 @@ public abstract class Animal extends SeaCreature {
                     if ((i == pos.getY()) && (j == pos.getX()))
                         continue;
                     else {
-                        if ((waterSpace[i][j] != -1) && (targets.indexOf(seaCreaturesMap.get(waterSpace[i][j]).getSpecies()) != -1))
+                        if ((waterSpace[i][j] != CLEAR_WATER_CODE)
+                                && (targets.indexOf(seaCreaturesMap.get(waterSpace[i][j]).getSpecies()) != CLEAR_WATER_CODE))
                             findPosBuffer.add(new Position(j,i));
                     }
                 }
