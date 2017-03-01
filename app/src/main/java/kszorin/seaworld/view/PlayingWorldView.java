@@ -202,6 +202,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         while (retry) {
             try {
                 playingWorldThread.join();
+                updatePositionThread.join();
                 retry = false;
             } catch (InterruptedException e) {
                 Log.e(TAG, "Thread interrupted", e);
@@ -217,6 +218,38 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
             updatePositions();
         }
         return true;
+    }
+
+    private class PlayingWorldThread extends Thread {
+        private SurfaceHolder surfaceHolder;
+        private boolean threadIsRunning = true;
+
+        public PlayingWorldThread(SurfaceHolder surfaceHolder) {
+            this.surfaceHolder = surfaceHolder;
+            setName("PlayingWorldthread");
+        }
+
+        public void setThreadIsRunning(boolean threadIsRunning) {
+            this.threadIsRunning = threadIsRunning;
+        }
+
+        @Override
+        public void run() {
+            Canvas canvas = null;
+
+            while (threadIsRunning) {
+                try {
+                    canvas = surfaceHolder.lockCanvas(null);
+                    synchronized (surfaceHolder) {
+                        drawGameElements(canvas);
+                    }
+                }
+                finally {
+                    if (canvas != null)
+                        surfaceHolder.unlockCanvasAndPost(canvas);
+                }
+            }
+        }
     }
 
     private class UpdatePositionThread extends Thread {
@@ -241,38 +274,6 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
                     canvas = surfaceHolder.lockCanvas(null);
                     synchronized (surfaceHolder) {
                         updatePositions();
-                    }
-                }
-                finally {
-                    if (canvas != null)
-                        surfaceHolder.unlockCanvasAndPost(canvas);
-                }
-            }
-        }
-    }
-
-    private class PlayingWorldThread extends Thread {
-        private SurfaceHolder surfaceHolder;
-        private boolean threadIsRunning = true;
-
-        public PlayingWorldThread(SurfaceHolder surfaceHolder) {
-            this.surfaceHolder = surfaceHolder;
-            setName("PlayingWorldthread");
-        }
-
-        public void setThreadIsRunning(boolean threadIsRunning) {
-            this.threadIsRunning = threadIsRunning;
-        }
-
-        @Override
-        public void run() {
-            Canvas canvas = null;
-
-            while (threadIsRunning) {
-                try {
-                    canvas = surfaceHolder.lockCanvas(null);
-                        synchronized (surfaceHolder) {
-                            drawGameElements(canvas);
                     }
                 }
                 finally {
