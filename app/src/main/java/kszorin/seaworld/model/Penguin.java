@@ -6,8 +6,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
+import java.util.Collections;
+
 import kszorin.seaworld.model.behaviour.InEnvironsMoving;
 import kszorin.seaworld.model.behaviour.PeriodicReproduction;
+import kszorin.seaworld.model.behaviour.VegeterianBeheviour;
 import kszorin.seaworld.view.PlayingWorldView;
 
 public class Penguin extends Animal {
@@ -18,17 +21,17 @@ public class Penguin extends Animal {
         super(id, pos, playingWorldView, bmp);
         species = SealCreatureSpecies.Penguin;
         environs = PENGUIN_ENVIRONS;
-        eatingBehaviour = null;
+        eatingBehaviour = new VegeterianBeheviour();
         reproductionBehaviour = new PeriodicReproduction();
         movingBehaviour = new InEnvironsMoving();
     }
 
     @Override
     public void lifeStep() {
-        movingBehaviour.move(this, playingWorldView, findInEnvirons ());
+        movingBehaviour.move(this, playingWorldView, findInEnvirons (Collections.<SealCreatureSpecies>emptyList()));
         age++;
         if ((age!=0) && (age % PENGUIN_REPRODUCTION_PERIOD == 0)) {
-            reproductionBehaviour.reproduct(this, playingWorldView, findInEnvirons());
+            reproductionBehaviour.reproduct(this, playingWorldView, findInEnvirons(Collections.<SealCreatureSpecies>emptyList()));
         }
     }
 

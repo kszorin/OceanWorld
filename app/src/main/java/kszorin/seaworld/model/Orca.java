@@ -5,6 +5,8 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 
+import java.util.Collections;
+
 import kszorin.seaworld.model.behaviour.Hunting;
 import kszorin.seaworld.model.behaviour.InEnvironsMoving;
 import kszorin.seaworld.model.behaviour.PeriodicReproduction;
@@ -34,7 +36,7 @@ public class Orca extends Animal {
             timeFromEating = 0;
         }
         else {
-            movingBehaviour.move(this, playingWorldView, findInEnvirons());
+            movingBehaviour.move(this, playingWorldView, findInEnvirons(Collections.<SealCreatureSpecies>emptyList()));
             timeFromEating++;
         }
 //        Если не умирает от голода - производит потомство.
@@ -48,7 +50,7 @@ public class Orca extends Animal {
         else {
             age++;
             if ((age!=0) && (age % ORCA_REPRODUCTION_PERIOD == 0))
-                reproductionBehaviour.reproduct(this, playingWorldView, findInEnvirons());
+                reproductionBehaviour.reproduct(this, playingWorldView, findInEnvirons(Collections.<SealCreatureSpecies>emptyList()));
         }
     }
 

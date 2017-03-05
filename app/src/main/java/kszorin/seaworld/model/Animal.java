@@ -30,7 +30,7 @@ public abstract class Animal extends SeaCreature {
     }
 
     public abstract Animal getBaby(int id, Position pos, Bitmap bitmap);
-
+/*
 //    Определение подходящих мест в окрестности текущего существа.
     protected List<Position> findInEnvirons () {
         int waterSpace[][] = playingWorldView.getWaterSpace();
@@ -61,15 +61,13 @@ public abstract class Animal extends SeaCreature {
             }
         return findPosBuffer;
     }
+    */
 //    Поиск подходящих мест в окрестности текущего существа, где есть цели, перечисленные в списке.
     protected List<Position> findInEnvirons (List<SealCreatureSpecies> targets) {
         int waterSpace[][] = playingWorldView.getWaterSpace();
         Map<Integer, SeaCreature> seaCreaturesMap = playingWorldView.getSeaCreaturesMap();
         int beginRangeBypassX, endRangeBypassX, beginRangeBypassY, endRangeBypassY;
 
-        if (targets.size() == 0)
-            return Collections.emptyList();
-        else {
 //        Определяем границу окрестности по X.
             if ((beginRangeBypassX = pos.getX() - environs) < 0)
                 beginRangeBypassX = 0;
@@ -89,13 +87,14 @@ public abstract class Animal extends SeaCreature {
                     if ((i == pos.getY()) && (j == pos.getX()))
                         continue;
                     else {
-                        if ((waterSpace[i][j] != CLEAR_WATER_CODE)
-                                && (targets.indexOf(seaCreaturesMap.get(waterSpace[i][j]).getSpecies()) != CLEAR_WATER_CODE))
+                        if ((targets.size() == 0) && (waterSpace[i][j] == CLEAR_WATER_CODE))
+                            findPosBuffer.add(new Position(j,i));
+                        if ((targets.size() != 0) && (waterSpace[i][j] != CLEAR_WATER_CODE)
+                                && (targets.indexOf(seaCreaturesMap.get(waterSpace[i][j]).getSpecies()) != -1))
                             findPosBuffer.add(new Position(j,i));
                     }
                 }
             return findPosBuffer;
-        }
     }
 
     @Override
