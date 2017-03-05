@@ -36,16 +36,17 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
 
     private int screenWidth, screenHeight;
     private float squareWidth, squareHeight;
-
+//    TODO: сделать MAP с типом животного в качестве ключа.
     private int orcasQuantity = 0, penguinsQuantity = 0;
     private int seaCreaturesIdCounter;
-//    В матрице содержится id персонажа либо (-1) если место пустое.
+//    В матрице содержится id персонажа либо CLEAR_WATER_CODE если место пустое.
     private int waterSpace[][];
 //    В отображении ключём является id персонажа, а содержимым - сам персонаж.
     private Map<Integer, SeaCreature> seaCreaturesMap;
 
     private int textSize;
     private Bitmap orcaBmp, penguinBmp;
+    Paint backgroundPaint, linePaint, textPaint;
 
     public PlayingWorldView(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -56,6 +57,14 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
 
         orcaBmp = BitmapFactory.decodeResource(getResources(), R.drawable.orca);
         penguinBmp = BitmapFactory.decodeResource(getResources(), R.drawable.tux);
+
+        backgroundPaint = new Paint();
+        backgroundPaint.setColor(Color.WHITE);
+        linePaint = new Paint();
+        linePaint.setColor(Color.BLACK);
+        textPaint = new Paint();
+        textPaint.setColor(Color.BLACK);
+        textPaint.setTextSize(textSize);
     }
 
     @Override
@@ -80,6 +89,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
         seaCreaturesIdCounter = 0;
         seaCreaturesMap.clear();
 
+//        TODO: подумать над опитмизацией
 //        Создаём и расставляем касаток на поле.
         int possiblePos, possiblePosX, possiblePosY;
         for (int i=0; i < orcasQuantity; i++) {
@@ -119,16 +129,6 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
     }
 
     private void drawWorld(Canvas canvas) {
-        Paint backgroundPaint, linePaint, textPaint;
-
-        backgroundPaint = new Paint();
-        backgroundPaint.setColor(Color.WHITE);
-        linePaint = new Paint();
-        linePaint.setColor(Color.BLACK);
-        textPaint = new Paint();
-        textPaint.setColor(Color.BLACK);
-        textPaint.setTextSize(textSize);
-
         canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), backgroundPaint);
 //        Рисуем линии.
         for (int i=0; i <=FIELD_SIZE_X; i++ ) {
@@ -278,7 +278,7 @@ public class PlayingWorldView extends SurfaceView implements SurfaceHolder.Callb
     public Map<Integer, SeaCreature> getSeaCreaturesMap() {
         return seaCreaturesMap;
     }
-
+//      TODO: подумать над getter'ом
     public int[][] getWaterSpace() {
         return waterSpace;
     }

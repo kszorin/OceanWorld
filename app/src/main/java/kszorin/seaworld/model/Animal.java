@@ -30,38 +30,7 @@ public abstract class Animal extends SeaCreature {
     }
 
     public abstract Animal getBaby(int id, Position pos, Bitmap bitmap);
-/*
-//    Определение подходящих мест в окрестности текущего существа.
-    protected List<Position> findInEnvirons () {
-        int waterSpace[][] = playingWorldView.getWaterSpace();
-        int beginRangeBypassX, endRangeBypassX, beginRangeBypassY, endRangeBypassY;
 
-//        Определяем границу окрестности по X.
-        if ((beginRangeBypassX = pos.getX() - environs) < 0)
-            beginRangeBypassX = 0;
-        if ((endRangeBypassX = pos.getX() + environs) > (PlayingWorldView.FIELD_SIZE_X - 1))
-            endRangeBypassX = PlayingWorldView.FIELD_SIZE_X - 1;
-
-//        Определяем границу окрестности по Y.
-        if ((beginRangeBypassY = pos.getY() - environs) < 0)
-            beginRangeBypassY = 0;
-        if ((endRangeBypassY = pos.getY() + environs) > (PlayingWorldView.FIELD_SIZE_Y - 1))
-            endRangeBypassY = PlayingWorldView.FIELD_SIZE_Y - 1;
-
-//        Определение подходящих мест в окрестности и заполнение буфера свободными позициями.
-        List<Position> findPosBuffer = new ArrayList<Position>();
-        for (int i = beginRangeBypassY, j; i <= endRangeBypassY; i++)
-            for (j = beginRangeBypassX; j <= endRangeBypassX; j++) {
-                if ((i == pos.getY()) && (j == pos.getX()))
-                    continue;
-                else {
-                    if (waterSpace[i][j] == CLEAR_WATER_CODE)
-                        findPosBuffer.add(new Position(j,i));
-                }
-            }
-        return findPosBuffer;
-    }
-    */
 //    Поиск подходящих мест в окрестности текущего существа, где есть цели, перечисленные в списке.
     protected List<Position> findInEnvirons (List<SealCreatureSpecies> targets) {
         int waterSpace[][] = playingWorldView.getWaterSpace();
